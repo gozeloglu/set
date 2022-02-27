@@ -11,6 +11,7 @@ type Interface interface {
 	Len() uint
 	Pop() interface{}
 	Clear()
+	Empty() bool
 }
 
 // Set is the data structure which provides some functionalities.
@@ -46,23 +47,23 @@ func (s *Set) Remove(val interface{}) {
 }
 
 // Contains checks the value whether exists in the set.
-func (s *Set) Contains(val interface{}) bool {
+func (s Set) Contains(val interface{}) bool {
 	_, ok := s.set[val]
 	return ok
 }
 
 // Capacity returns the set capacity.
-func (s *Set) Capacity() uint {
+func (s Set) Capacity() uint {
 	return s.cap
 }
 
 // Len returns the length of the set which means that number of value of the set.
-func (s *Set) Len() uint {
+func (s Set) Len() uint {
 	return s.len
 }
 
 // Pop returns a random value from the set.
-func (s *Set) Pop() interface{} {
+func (s Set) Pop() interface{} {
 	if s.len == 0 {
 		return nil
 	}
@@ -80,4 +81,8 @@ func (s *Set) Pop() interface{} {
 // Clear removes everything from the set.
 func (s *Set) Clear() {
 	s.set = make(map[interface{}]struct{}, s.cap)
+}
+
+func (s Set) Empty() bool {
+	return s.len == 0
 }
