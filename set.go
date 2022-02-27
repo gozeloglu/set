@@ -1,14 +1,16 @@
 package set
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 type Interface interface {
 	Add(val interface{})
 	Append(val ...interface{})
 	Remove(val interface{})
 	Contains(val interface{}) bool
-	Capacity() uint
-	Len() uint
+	Size() uint
 	Pop() interface{}
 	Clear()
 	Empty() bool
@@ -17,20 +19,25 @@ type Interface interface {
 // Set is the data structure which provides some functionalities.
 type Set struct {
 	set map[interface{}]struct{}
-	cap uint
-	len uint
 }
 
 // setVal is the value of the map. It has 0 byte.
 var setVal = struct{}{}
 
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+// NewSet creates a set data structure.
+func NewSet() *Set {
+	s := &Set{}
+	s.set = make(map[interface{}]struct{})
+	return s
+}
+
 // Add adds a new values to set if there is enough capacity.
 func (s *Set) Add(val interface{}) {
-	if s.len == s.cap {
-		return
-	}
 	s.set[val] = setVal
-	s.len++
 }
 
 // Append adds multiple values into set.
@@ -43,7 +50,6 @@ func (s *Set) Append(values ...interface{}) {
 // Remove deletes the given value.
 func (s *Set) Remove(val interface{}) {
 	delete(s.set, val)
-	s.len--
 }
 
 // Contains checks the value whether exists in the set.
@@ -52,22 +58,14 @@ func (s Set) Contains(val interface{}) bool {
 	return ok
 }
 
-// Capacity returns the set capacity.
-func (s Set) Capacity() uint {
-	return s.cap
-}
-
-// Len returns the length of the set which means that number of value of the set.
-func (s Set) Len() uint {
-	return s.len
+// Size returns the length of the set which means that number of value of the set.
+func (s Set) Size() uint {
+	return uint(len(s.set))
 }
 
 // Pop returns a random value from the set.
 func (s Set) Pop() interface{} {
-	if s.len == 0 {
-		return nil
-	}
-	idx := rand.Int63n(int64(s.len))
+	idx := rand.Int63n(int64(len(s.set)))
 	var randVal interface{}
 	for i, val := range s.set {
 		if i == idx {
@@ -80,9 +78,10 @@ func (s Set) Pop() interface{} {
 
 // Clear removes everything from the set.
 func (s *Set) Clear() {
-	s.set = make(map[interface{}]struct{}, s.cap)
+	s.set = make(map[interface{}]struct{})
 }
 
+// Empty checks whether the set is empty.
 func (s Set) Empty() bool {
-	return s.len == 0
+	return len(s.set) == 0
 }
