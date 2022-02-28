@@ -79,10 +79,9 @@ func TestSet_Add(t *testing.T) {
 
 func TestSet_Append(t *testing.T) {
 	testCases := []struct {
-		name      string
-		set       *Set
-		values    []interface{}
-		expValues []interface{}
+		name   string
+		set    *Set
+		values []interface{}
 	}{
 		{
 			name:   "Append single value",
