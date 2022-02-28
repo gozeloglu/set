@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Interface interface {
+type S interface {
 	Add(val interface{})
 	Append(val ...interface{})
 	Remove(val interface{})
@@ -42,7 +42,7 @@ func (s *Set) Add(val interface{}) {
 
 // Append adds multiple values into set.
 func (s *Set) Append(values ...interface{}) {
-	for val := range values {
+	for _, val := range values {
 		s.Add(val)
 	}
 }
