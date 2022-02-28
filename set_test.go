@@ -174,7 +174,6 @@ func TestSet_Remove(t *testing.T) {
 			}
 
 			actualLen := len(tc.set.set)
-			t.Log(tc.set.set)
 			if actualLen != tc.expLen {
 				t.Errorf("expected length %v, actual length %v", tc.expLen, actualLen)
 			}
@@ -183,6 +182,90 @@ func TestSet_Remove(t *testing.T) {
 					t.Errorf("expected value %v, but not found in set", v)
 				}
 			}
+		})
+	}
+}
+
+func TestSet_Contains(t *testing.T) {
+	testCases := []struct {
+		name     string
+		set      *Set
+		values   []interface{}
+		checkVal interface{}
+		exist    bool
+	}{
+		{
+			name:     "Check exist value",
+			set:      NewSet(),
+			values:   []interface{}{"test"},
+			checkVal: "test",
+			exist:    true,
+		},
+		{
+			name:     "Check non-exist value",
+			set:      NewSet(),
+			values:   []interface{}{"test"},
+			checkVal: "value",
+			exist:    false,
+		},
+		{
+			name:     "Check empty set",
+			set:      NewSet(),
+			checkVal: "test",
+			exist:    false,
+		},
+		{
+			name:     "Check integer - exist",
+			set:      NewSet(),
+			values:   []interface{}{120},
+			checkVal: 120,
+			exist:    true,
+		},
+		{
+			name:     "Check integer - not exist",
+			set:      NewSet(),
+			values:   []interface{}{120},
+			checkVal: 200,
+			exist:    false,
+		},
+		{
+			name:     "Check float - exist",
+			set:      NewSet(),
+			values:   []interface{}{12.98},
+			checkVal: 12.98,
+			exist:    true,
+		},
+		{
+			name:     "Check boolean",
+			set:      NewSet(),
+			values:   []interface{}{false},
+			checkVal: false,
+			exist:    true,
+		},
+		{
+			name:     "Check byte",
+			set:      NewSet(),
+			values:   []interface{}{byte('a')},
+			checkVal: byte('a'),
+			exist:    true,
+		},
+		{
+			name:     "Check value from multiple set",
+			set:      NewSet(),
+			values:   []interface{}{120, 32.123, "test", false, byte('a')},
+			checkVal: 120,
+			exist:    true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.set.Append(tc.values...)
+			exist := tc.set.Contains(tc.checkVal)
+			if exist != tc.exist {
+				t.Errorf("Value: %v \nexpected %v, actual %v", tc.checkVal, tc.exist, exist)
+			}
+
 		})
 	}
 }
