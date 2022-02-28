@@ -116,3 +116,73 @@ func TestSet_Append(t *testing.T) {
 		})
 	}
 }
+
+func TestSet_Remove(t *testing.T) {
+	testCases := []struct {
+		name            string
+		set             *Set
+		values          []interface{}
+		expRemoveValues []interface{}
+		remainingValues []interface{}
+		expLen          int
+	}{
+		{
+			name:            "Remove from empty set",
+			set:             NewSet(),
+			values:          []interface{}{},
+			expRemoveValues: []interface{}{"test", 12},
+			expLen:          0,
+		},
+		{
+			name:            "Remove from 1-length set",
+			set:             NewSet(),
+			values:          []interface{}{"test_val"},
+			expRemoveValues: []interface{}{"test_val"},
+			expLen:          0,
+		},
+		{
+			name:            "Remove from 3-length set",
+			set:             NewSet(),
+			values:          []interface{}{"val", 12, true},
+			expRemoveValues: []interface{}{12},
+			remainingValues: []interface{}{"val", true},
+			expLen:          2,
+		},
+		{
+			name:            "Remove multiple values",
+			set:             NewSet(),
+			values:          []interface{}{"test", 12, 43.2, true, byte('a')},
+			expRemoveValues: []interface{}{"test", true, 43.2},
+			remainingValues: []interface{}{12, byte('a')},
+			expLen:          2,
+		},
+		{
+			name:            "Remove not exist value",
+			set:             NewSet(),
+			values:          []interface{}{"test_val"},
+			expRemoveValues: []interface{}{"test_key"},
+			remainingValues: []interface{}{"test_val"},
+			expLen:          1,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.set.Append(tc.values...)
+			for _, v := range tc.expRemoveValues {
+				tc.set.Remove(v)
+			}
+
+			actualLen := len(tc.set.set)
+			t.Log(tc.set.set)
+			if actualLen != tc.expLen {
+				t.Errorf("expected length %v, actual length %v", tc.expLen, actualLen)
+			}
+			for _, v := range tc.remainingValues {
+				if _, ok := tc.set.set[v]; !ok {
+					t.Errorf("expected value %v, but not found in set", v)
+				}
+			}
+		})
+	}
+}
