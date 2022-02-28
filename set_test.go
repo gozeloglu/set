@@ -19,6 +19,33 @@ func TestSet_Add(t *testing.T) {
 				"first": setVal,
 			},
 		},
+		{
+			name:   "Add int value",
+			set:    NewSet(),
+			val:    12,
+			expLen: 1,
+			expSet: map[interface{}]struct{}{
+				12: setVal,
+			},
+		},
+		{
+			name:   "Add float value",
+			set:    NewSet(),
+			val:    12.3,
+			expLen: 1,
+			expSet: map[interface{}]struct{}{
+				12.3: setVal,
+			},
+		},
+		{
+			name:   "Add bool value",
+			set:    NewSet(),
+			val:    true,
+			expLen: 1,
+			expSet: map[interface{}]struct{}{
+				true: setVal,
+			},
+		},
 	}
 
 	for _, tc := range testCases {
