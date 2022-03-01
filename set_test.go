@@ -1,6 +1,8 @@
 package set
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestSet_Add(t *testing.T) {
 	testCases := []struct {
@@ -266,6 +268,65 @@ func TestSet_Contains(t *testing.T) {
 				t.Errorf("Value: %v \nexpected %v, actual %v", tc.checkVal, tc.exist, exist)
 			}
 
+		})
+	}
+}
+
+func TestSet_Size(t *testing.T) {
+	testCases := []struct {
+		name         string
+		set          *Set
+		values       []interface{}
+		removeValues []interface{}
+		expSize      uint
+	}{
+		{
+			name:    "Empty set",
+			set:     New(),
+			expSize: 0,
+		},
+		{
+			name:    "Add value, check size",
+			set:     New(),
+			values:  []interface{}{"test"},
+			expSize: 1,
+		},
+		{
+			name:         "Add value, remove value, check size",
+			set:          New(),
+			values:       []interface{}{"test"},
+			removeValues: []interface{}{"test"},
+			expSize:      0,
+		},
+		{
+			name:    "Add multiple values",
+			set:     New(),
+			values:  []interface{}{"test", 125, true, 64.23},
+			expSize: 4,
+		},
+		{
+			name:         "Add multiple values, remove multiple values",
+			set:          New(),
+			values:       []interface{}{"test", 125, true, 64.23},
+			removeValues: []interface{}{125, true},
+			expSize:      2,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if len(tc.values) > 0 {
+				tc.set.Append(tc.values...)
+			}
+			if len(tc.removeValues) > 0 {
+				for _, val := range tc.removeValues {
+					tc.set.Remove(val)
+				}
+			}
+			size := tc.set.Size()
+			if size != tc.expSize {
+				t.Errorf("expected size %v, actual size %v", tc.expSize, size)
+			}
 		})
 	}
 }
