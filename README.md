@@ -39,13 +39,15 @@ func main() {
         fmt.Println("123 not exist")
     }
 	
-    s.Append(1, 2, 3, 4, "abc")    # Add multiple values
+    s.Append(1, 2, 3, 4, "abc")    // Add multiple values
 	
     s.Remove(4)
     size := s.Size()
-    fmt.Println(size)   # Prints 5
+    fmt.Println(size)   // Prints 5
+	
+    s.Pop()    // Returns random value from the set
     s.Clear()
-    fmt.Println(s.Size())   # Prints 0
+    fmt.Println(s.Size())   // Prints 0
 }
 ```
 

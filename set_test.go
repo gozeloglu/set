@@ -330,3 +330,50 @@ func TestSet_Size(t *testing.T) {
 		})
 	}
 }
+
+func TestSet_Pop(t *testing.T) {
+	testCases := []struct {
+		name    string
+		set     *Set
+		values  []interface{}
+		isEmpty bool
+	}{
+		{
+			name:    "Pop from empty set",
+			set:     New(),
+			isEmpty: true,
+		},
+		{
+			name:   "Pop from single value set",
+			set:    New(),
+			values: []interface{}{"test"},
+		},
+		{
+			name:   "Pop from multiple value set",
+			set:    New(),
+			values: []interface{}{"test", 123, true},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.values != nil {
+				tc.set.Append(tc.values...)
+			}
+			t.Log(tc.set.set)
+			value := tc.set.Pop()
+			t.Log(value)
+			for _, val := range tc.values {
+				if val == value {
+					return
+				}
+			}
+			if tc.isEmpty && value != nil {
+				t.Errorf("expected nil, actual %v", value)
+			}
+			if !tc.isEmpty {
+				t.Errorf("%v not exist in set", value)
+			}
+		})
+	}
+}

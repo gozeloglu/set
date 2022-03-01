@@ -63,15 +63,20 @@ func (s Set) Size() uint {
 	return uint(len(s.set))
 }
 
-// Pop returns a random value from the set.
+// Pop returns a random value from the set. If there is no element in set, it
+// returns nil.
 func (s Set) Pop() interface{} {
+	if len(s.set) == 0 {
+		return nil
+	}
 	idx := rand.Int63n(int64(len(s.set)))
 	var randVal interface{}
-	for i, val := range s.set {
-		if i == idx {
+	for val := range s.set {
+		if idx == 0 {
 			randVal = val
 			break
 		}
+		idx--
 	}
 	return randVal
 }
