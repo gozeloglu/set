@@ -12,7 +12,7 @@ func TestSet_Add(t *testing.T) {
 	}{
 		{
 			name:   "Add a value from scratch",
-			set:    NewSet(),
+			set:    New(),
 			val:    "first",
 			expLen: 1,
 			expSet: map[interface{}]struct{}{
@@ -21,7 +21,7 @@ func TestSet_Add(t *testing.T) {
 		},
 		{
 			name:   "Add int value",
-			set:    NewSet(),
+			set:    New(),
 			val:    12,
 			expLen: 1,
 			expSet: map[interface{}]struct{}{
@@ -30,7 +30,7 @@ func TestSet_Add(t *testing.T) {
 		},
 		{
 			name:   "Add float value",
-			set:    NewSet(),
+			set:    New(),
 			val:    12.3,
 			expLen: 1,
 			expSet: map[interface{}]struct{}{
@@ -39,7 +39,7 @@ func TestSet_Add(t *testing.T) {
 		},
 		{
 			name:   "Add bool value",
-			set:    NewSet(),
+			set:    New(),
 			val:    true,
 			expLen: 1,
 			expSet: map[interface{}]struct{}{
@@ -48,7 +48,7 @@ func TestSet_Add(t *testing.T) {
 		},
 		{
 			name:   "Add byte value",
-			set:    NewSet(),
+			set:    New(),
 			val:    byte('b'),
 			expLen: 1,
 			expSet: map[interface{}]struct{}{
@@ -85,22 +85,22 @@ func TestSet_Append(t *testing.T) {
 	}{
 		{
 			name:   "Append single value",
-			set:    NewSet(),
+			set:    New(),
 			values: []interface{}{"test_value"},
 		},
 		{
 			name:   "Append multiple values",
-			set:    NewSet(),
+			set:    New(),
 			values: []interface{}{"test_value1", "test_value2"},
 		},
 		{
 			name:   "Append nothing",
-			set:    NewSet(),
+			set:    New(),
 			values: []interface{}{},
 		},
 		{
 			name:   "Append different data types",
-			set:    NewSet(),
+			set:    New(),
 			values: []interface{}{"str", 12, true, 32.4, uint16(45), byte('a')},
 		},
 	}
@@ -128,21 +128,21 @@ func TestSet_Remove(t *testing.T) {
 	}{
 		{
 			name:            "Remove from empty set",
-			set:             NewSet(),
+			set:             New(),
 			values:          []interface{}{},
 			expRemoveValues: []interface{}{"test", 12},
 			expLen:          0,
 		},
 		{
 			name:            "Remove from 1-length set",
-			set:             NewSet(),
+			set:             New(),
 			values:          []interface{}{"test_val"},
 			expRemoveValues: []interface{}{"test_val"},
 			expLen:          0,
 		},
 		{
 			name:            "Remove from 3-length set",
-			set:             NewSet(),
+			set:             New(),
 			values:          []interface{}{"val", 12, true},
 			expRemoveValues: []interface{}{12},
 			remainingValues: []interface{}{"val", true},
@@ -150,7 +150,7 @@ func TestSet_Remove(t *testing.T) {
 		},
 		{
 			name:            "Remove multiple values",
-			set:             NewSet(),
+			set:             New(),
 			values:          []interface{}{"test", 12, 43.2, true, byte('a')},
 			expRemoveValues: []interface{}{"test", true, 43.2},
 			remainingValues: []interface{}{12, byte('a')},
@@ -158,7 +158,7 @@ func TestSet_Remove(t *testing.T) {
 		},
 		{
 			name:            "Remove not exist value",
-			set:             NewSet(),
+			set:             New(),
 			values:          []interface{}{"test_val"},
 			expRemoveValues: []interface{}{"test_key"},
 			remainingValues: []interface{}{"test_val"},
@@ -196,62 +196,62 @@ func TestSet_Contains(t *testing.T) {
 	}{
 		{
 			name:     "Check exist value",
-			set:      NewSet(),
+			set:      New(),
 			values:   []interface{}{"test"},
 			checkVal: "test",
 			exist:    true,
 		},
 		{
 			name:     "Check non-exist value",
-			set:      NewSet(),
+			set:      New(),
 			values:   []interface{}{"test"},
 			checkVal: "value",
 			exist:    false,
 		},
 		{
 			name:     "Check empty set",
-			set:      NewSet(),
+			set:      New(),
 			checkVal: "test",
 			exist:    false,
 		},
 		{
 			name:     "Check integer - exist",
-			set:      NewSet(),
+			set:      New(),
 			values:   []interface{}{120},
 			checkVal: 120,
 			exist:    true,
 		},
 		{
 			name:     "Check integer - not exist",
-			set:      NewSet(),
+			set:      New(),
 			values:   []interface{}{120},
 			checkVal: 200,
 			exist:    false,
 		},
 		{
 			name:     "Check float - exist",
-			set:      NewSet(),
+			set:      New(),
 			values:   []interface{}{12.98},
 			checkVal: 12.98,
 			exist:    true,
 		},
 		{
 			name:     "Check boolean",
-			set:      NewSet(),
+			set:      New(),
 			values:   []interface{}{false},
 			checkVal: false,
 			exist:    true,
 		},
 		{
 			name:     "Check byte",
-			set:      NewSet(),
+			set:      New(),
 			values:   []interface{}{byte('a')},
 			checkVal: byte('a'),
 			exist:    true,
 		},
 		{
 			name:     "Check value from multiple set",
-			set:      NewSet(),
+			set:      New(),
 			values:   []interface{}{120, 32.123, "test", false, byte('a')},
 			checkVal: 120,
 			exist:    true,

@@ -28,8 +28,8 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-// NewSet creates a set data structure.
-func NewSet() *Set {
+// New creates a set data structure.
+func New() *Set {
 	s := &Set{}
 	s.set = make(map[interface{}]struct{})
 	return s
