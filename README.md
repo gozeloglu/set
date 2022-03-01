@@ -36,16 +36,16 @@ func main() {
 	
     exist := s.Contains(123)
     if !exist {
-		fmt.Println("123 not exist")
+        fmt.Println("123 not exist")
     }
 	
-	s.Append(1, 2, 3, 4, "abc")    # Add multiple values
+    s.Append(1, 2, 3, 4, "abc")    # Add multiple values
 	
-	s.Remove(4)
-	size := s.Size()
-	fmt.Println(size)   # Prints 5
-	s.Clear()
-	fmt.Println(s.Size())   # Prints 0
+    s.Remove(4)
+    size := s.Size()
+    fmt.Println(size)   # Prints 5
+    s.Clear()
+    fmt.Println(s.Size())   # Prints 0
 }
 ```
 
