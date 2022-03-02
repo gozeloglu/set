@@ -417,3 +417,62 @@ func TestSet_Clear(t *testing.T) {
 		})
 	}
 }
+
+func TestSet_Empty(t *testing.T) {
+	testCases := []struct {
+		name         string
+		set          *Set
+		values       []interface{}
+		removeValues []interface{}
+		empty        bool
+	}{
+		{
+			name:   "Check empty set",
+			set:    New(),
+			values: []interface{}{},
+			empty:  true,
+		},
+		{
+			name:   "Check single value set",
+			set:    New(),
+			values: []interface{}{"test"},
+			empty:  false,
+		},
+		{
+			name:   "Check multiple value set",
+			set:    New(),
+			values: []interface{}{"test", 100, true, false, 98.4},
+			empty:  false,
+		},
+		{
+			name:         "Check firstly filled, then cleared set",
+			set:          New(),
+			values:       []interface{}{"test", 100, true, 76.34},
+			removeValues: []interface{}{"test", 100, true, 76.34},
+			empty:        true,
+		},
+		{
+			name:         "Check firstly filled, then removed some elements set",
+			set:          New(),
+			values:       []interface{}{"test", 100, true, 76.34},
+			removeValues: []interface{}{"test", 100},
+			empty:        false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.set.Append(tc.values...)
+			if tc.removeValues != nil {
+				for _, val := range tc.removeValues {
+					tc.set.Remove(val)
+				}
+			}
+			empty := tc.set.Empty()
+			if empty != tc.empty {
+				t.Errorf("expected %v, actual %v", tc.empty, empty)
+			}
+
+		})
+	}
+}

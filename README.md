@@ -40,6 +40,10 @@ func main() {
 	s.Pop()    // Returns random value from the set
 	s.Clear()
 	fmt.Println(s.Size())   // Prints 0
+	
+	if s.Empty() {
+            fmt.Println("set is empty")
+    }
 }
 ```
 
