@@ -43,7 +43,7 @@ func main() {
 	
 	if s.Empty() {
             fmt.Println("set is empty")
-    }
+        }   
 }
 ```
 
@@ -72,3 +72,7 @@ You can check the code coverage with the following commands:
 go test -coverprofile=coverage.out
 go tool cover -html=coverage.out -o coverage.html
 ```
+
+## LICENSE
+
+[MIT](https://github.com/gozeloglu/set/blob/main/LICENSE)
