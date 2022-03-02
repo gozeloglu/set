@@ -377,3 +377,43 @@ func TestSet_Pop(t *testing.T) {
 		})
 	}
 }
+
+func TestSet_Clear(t *testing.T) {
+	testCases := []struct {
+		name   string
+		set    *Set
+		values []interface{}
+	}{
+		{
+			name:   "Clear empty set",
+			set:    New(),
+			values: []interface{}{},
+		},
+		{
+			name:   "Clear single value set",
+			set:    New(),
+			values: []interface{}{"test"},
+		},
+		{
+			name:   "Clear multiple value set",
+			set:    New(),
+			values: []interface{}{"test", 12, false, byte('w'), 43.10},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.set.Append(tc.values...)
+			tc.set.Clear()
+			size := tc.set.Size()
+			if size != 0 {
+				t.Errorf("expected size is 0, actual size is %v", size)
+			}
+			for _, val := range tc.values {
+				if tc.set.Contains(val) {
+					t.Errorf("%v should not exist in the set, but it exists", val)
+				}
+			}
+		})
+	}
+}
