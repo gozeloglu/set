@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// S is set interface.
 type S interface {
 	Add(val interface{})
 	Append(val ...interface{})

@@ -360,9 +360,7 @@ func TestSet_Pop(t *testing.T) {
 			if tc.values != nil {
 				tc.set.Append(tc.values...)
 			}
-			t.Log(tc.set.set)
 			value := tc.set.Pop()
-			t.Log(value)
 			for _, val := range tc.values {
 				if val == value {
 					return
