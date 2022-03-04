@@ -1,4 +1,4 @@
-# set
+# set [![Go Reference](https://pkg.go.dev/badge/github.com/gozeloglu/set.svg)](https://pkg.go.dev/github.com/gozeloglu/set)
 
 `set` is a data structure package written by **Go**. It provides some basic set functionalities of the user. It uses 
 `map` data structure under the hood. It does not have any dependency. 
