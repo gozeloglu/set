@@ -15,6 +15,7 @@ type S interface {
 	Pop() interface{}
 	Clear()
 	Empty() bool
+	Slice() []interface{}
 }
 
 // Set is the data structure which provides some functionalities.
@@ -90,4 +91,17 @@ func (s *Set) Clear() {
 // Empty checks whether the set is empty.
 func (s Set) Empty() bool {
 	return len(s.set) == 0
+}
+
+// Slice returns the elements of the set as a slice. The slice type is
+// interface{}. The elements can be in any order.
+func (s Set) Slice() []interface{} {
+	values := make([]interface{}, s.Size())
+
+	i := 0
+	for k := range s.set {
+		values[i] = k
+		i++
+	}
+	return values
 }

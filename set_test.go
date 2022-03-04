@@ -475,6 +475,44 @@ func TestSet_Empty(t *testing.T) {
 	}
 }
 
+func TestSet_Slice(t *testing.T) {
+	testCases := []struct {
+		name   string
+		values []interface{}
+		expLen int
+	}{
+		{
+			name: "Empty set",
+		},
+		{
+			name:   "Multiple value set",
+			values: []interface{}{1, 2, 3, 4, 5},
+			expLen: 5,
+		},
+		{
+			name:   "Multiple value, different type set",
+			values: []interface{}{1, 2, 3, "test", "array", true, false, 43.12},
+			expLen: 8,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := New()
+			s.Append(tc.values...)
+			setSlice := s.Slice()
+			if len(setSlice) != tc.expLen {
+				t.Errorf("expected length %v, actual length %v", tc.expLen, len(setSlice))
+			}
+			for i := range setSlice {
+				if !s.Contains(setSlice[i]) {
+					t.Errorf("%v should be in array, but not exist", setSlice[i])
+				}
+			}
+		})
+	}
+}
+
 var benchmarkData = []interface{}{
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 	true, false,

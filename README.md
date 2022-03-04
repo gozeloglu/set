@@ -57,6 +57,7 @@ func main() {
 * `Pop()`
 * `Clear()`
 * `Empty()`
+* `Slice()`
 
 ## Tests
 
