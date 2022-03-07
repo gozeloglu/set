@@ -16,3 +16,6 @@ cover-html:
 
 bench:
 	go test -bench=.
+
+fmt:
+	go fmt ./...

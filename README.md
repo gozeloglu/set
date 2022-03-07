@@ -58,6 +58,7 @@ func main() {
 * `Clear()`
 * `Empty()`
 * `Slice()`
+* `Union()`
 
 ## Tests
 

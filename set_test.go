@@ -513,6 +513,86 @@ func TestSet_Slice(t *testing.T) {
 	}
 }
 
+func TestSet_Union(t *testing.T) {
+	testCases := []struct {
+		name    string
+		values1 []interface{}
+		values2 []interface{}
+		expSet  *Set
+	}{
+		{
+			name:   "Both empty set",
+			expSet: New(),
+		},
+		{
+			name:    "Set-1 is empty",
+			values2: []interface{}{"test", 1, 120.32, true},
+			expSet: &Set{set: map[interface{}]struct{}{
+				"test": setVal,
+				1:      setVal,
+				120.32: setVal,
+				true:   setVal,
+			}},
+		},
+		{
+			name:    "Set-2 is empty",
+			values1: []interface{}{"test", 1, 120.32, true},
+			expSet: &Set{set: map[interface{}]struct{}{
+				"test": setVal,
+				1:      setVal,
+				120.32: setVal,
+				true:   setVal,
+			}},
+		},
+		{
+			name:    "Both sets not empty",
+			values1: []interface{}{"testStr", 32, false},
+			values2: []interface{}{"anotherStr", 43, true},
+			expSet: &Set{set: map[interface{}]struct{}{
+				"testStr":    setVal,
+				32:           setVal,
+				false:        setVal,
+				"anotherStr": setVal,
+				43:           setVal,
+				true:         setVal,
+			}},
+		},
+		{
+			name:    "Duplicate values",
+			values1: []interface{}{"test", 100, true},
+			values2: []interface{}{"test", 120, 100, true, false},
+			expSet: &Set{set: map[interface{}]struct{}{
+				"test": setVal,
+				100:    setVal,
+				true:   setVal,
+				120:    setVal,
+				false:  setVal,
+			}},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			set1 := New()
+			set1.Append(tc.values1...)
+			set2 := New()
+			set2.Append(tc.values2...)
+
+			unionSet := set1.Union(set2)
+
+			if unionSet.Size() != tc.expSet.Size() {
+				t.Errorf("expected size %v, actual size %v", tc.expSet.Size(), unionSet.Size())
+			}
+			for val := range tc.expSet.set {
+				if !unionSet.Contains(val) {
+					t.Errorf("expected %v, but not exists in unionSet", val)
+				}
+			}
+
+		})
+	}
+}
+
 var benchmarkData = []interface{}{
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 	true, false,

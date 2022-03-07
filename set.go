@@ -16,6 +16,7 @@ type S interface {
 	Clear()
 	Empty() bool
 	Slice() []interface{}
+	Union(set *Set) *Set
 }
 
 // Set is the data structure which provides some functionalities.
@@ -104,4 +105,17 @@ func (s Set) Slice() []interface{} {
 		i++
 	}
 	return values
+}
+
+// Union returns a new Set that contains all items from the receiver Set and
+// all items from the given Set.
+func (s Set) Union(set *Set) *Set {
+	unionSet := New()
+	for val := range s.set {
+		unionSet.Add(val)
+	}
+	for val := range set.set {
+		unionSet.Add(val)
+	}
+	return unionSet
 }

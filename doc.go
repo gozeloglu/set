@@ -30,5 +30,8 @@ without any dependency.
 		s.Clear()
 		fmt.Println(s.Size())   // Prints 0
 	}
+
+You can call the Union() method for creating a new Set which contains the all
+items from the set1 and set2. It concatenates two sets and creates a new one.
 */
 package set
