@@ -17,6 +17,7 @@ type S interface {
 	Empty() bool
 	Slice() []interface{}
 	Union(set *Set) *Set
+	Intersection(set *Set) *Set
 }
 
 // Set is the data structure which provides some functionalities.
@@ -118,4 +119,16 @@ func (s Set) Union(set *Set) *Set {
 		unionSet.Add(val)
 	}
 	return unionSet
+}
+
+// Intersection takes the common values from both sets and returns a new set
+// that stores the common ones.
+func (s *Set) Intersection(set *Set) *Set {
+	intersectSet := New()
+	for val := range s.set {
+		if set.Contains(val) {
+			intersectSet.Add(val)
+		}
+	}
+	return intersectSet
 }

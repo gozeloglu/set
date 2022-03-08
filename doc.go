@@ -33,5 +33,11 @@ without any dependency.
 
 You can call the Union() method for creating a new Set which contains the all
 items from the set1 and set2. It concatenates two sets and creates a new one.
+
+	union := set1.Union(set2)
+
+In order to take intersection of the sets, you can call the Intersection() method.
+
+	intersect := set1.Intersection(set2)
 */
 package set

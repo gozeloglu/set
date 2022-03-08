@@ -59,6 +59,7 @@ func main() {
 * `Empty()`
 * `Slice()`
 * `Union()`
+* `Intersection()`
 
 ## Tests
 

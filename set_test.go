@@ -593,6 +593,70 @@ func TestSet_Union(t *testing.T) {
 	}
 }
 
+func TestSet_Intersection(t *testing.T) {
+	testCases := []struct {
+		name    string
+		values1 []interface{}
+		values2 []interface{}
+		expSet  *Set
+	}{
+		{
+			name:   "Both empty sets",
+			expSet: New(),
+		},
+		{
+			name:    "Set1 is empty",
+			values2: []interface{}{1, 2, 3, 4},
+			expSet:  New(),
+		},
+		{
+			name:    "Set2 is empty",
+			values1: []interface{}{1, 2, 3, 4},
+			expSet:  New(),
+		},
+		{
+			name:    "Both set is non-empty",
+			values1: []interface{}{1, 2, 3, 4, "test", true, byte('w')},
+			values2: []interface{}{1, 2, "test", false, true, byte('a')},
+			expSet: &Set{set: map[interface{}]struct{}{
+				1:      setVal,
+				2:      setVal,
+				"test": setVal,
+				true:   setVal,
+			}},
+		},
+		{
+			name:    "No intersection",
+			values2: []interface{}{1, 2, 3, 4, "value"},
+			values1: []interface{}{0, "test", true},
+			expSet:  New(),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			set1 := New()
+			set1.Append(tc.values1...)
+
+			set2 := New()
+			set2.Append(tc.values2...)
+
+			intersectSet1 := set1.Intersection(set2)
+			for k := range tc.expSet.set {
+				if !intersectSet1.Contains(k) {
+					t.Errorf("expected value %v, but not found in intersection set", k)
+				}
+			}
+			intersectSet2 := set2.Intersection(set1)
+			for k := range tc.expSet.set {
+				if !intersectSet2.Contains(k) {
+					t.Errorf("expected value %v, but not found in intersection set", k)
+				}
+			}
+		})
+	}
+}
+
 var benchmarkData = []interface{}{
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 	true, false,
