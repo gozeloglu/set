@@ -18,6 +18,7 @@ type S interface {
 	Slice() []interface{}
 	Union(set *Set) *Set
 	Intersection(set *Set) *Set
+	Difference(set *Set) *Set
 }
 
 // Set is the data structure which provides some functionalities.
@@ -34,9 +35,7 @@ func init() {
 
 // New creates a set data structure.
 func New() *Set {
-	s := &Set{}
-	s.set = make(map[interface{}]struct{})
-	return s
+	return &Set{set: make(map[interface{}]struct{})}
 }
 
 // Add adds a new values to set if there is enough capacity.
@@ -131,4 +130,16 @@ func (s *Set) Intersection(set *Set) *Set {
 		}
 	}
 	return intersectSet
+}
+
+// Difference takes the items that only is stored in s, receiver set. It returns
+// a new set.
+func (s *Set) Difference(set *Set) *Set {
+	diffSet := New()
+	for val := range s.set {
+		if !set.Contains(val) {
+			diffSet.Add(val)
+		}
+	}
+	return diffSet
 }

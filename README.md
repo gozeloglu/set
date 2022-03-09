@@ -60,6 +60,7 @@ func main() {
 * `Slice()`
 * `Union()`
 * `Intersection()`
+* `Difference()`
 
 ## Tests
 

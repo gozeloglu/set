@@ -657,6 +657,85 @@ func TestSet_Intersection(t *testing.T) {
 	}
 }
 
+func TestSet_Difference(t *testing.T) {
+	testCases := []struct {
+		name    string
+		values1 []interface{}
+		values2 []interface{}
+		expSet1 *Set
+		expSet2 *Set
+	}{
+		{
+			name:    "Both empty sets",
+			expSet1: New(),
+			expSet2: New(),
+		},
+		{
+			name:    "Set1 is empty",
+			values2: []interface{}{1, 2, 3, 4, 5},
+			expSet1: New(),
+			expSet2: &Set{set: map[interface{}]struct{}{
+				1: setVal,
+				2: setVal,
+				3: setVal,
+				4: setVal,
+				5: setVal,
+			}},
+		},
+		{
+			name:    "Set2 is empty",
+			values1: []interface{}{1, 2, 3, 4, 5},
+			expSet1: &Set{set: map[interface{}]struct{}{
+				1: setVal,
+				2: setVal,
+				3: setVal,
+				4: setVal,
+				5: setVal,
+			}},
+			expSet2: New(),
+		},
+		{
+			name:    "Both sets are non-empty",
+			values1: []interface{}{1, 2, 3, 4, 5},
+			values2: []interface{}{1, 2, 3, 10, 20, "test", true},
+			expSet1: &Set{set: map[interface{}]struct{}{
+				4: setVal,
+				5: setVal,
+			}},
+			expSet2: &Set{map[interface{}]struct{}{
+				10:     setVal,
+				20:     setVal,
+				"test": setVal,
+				true:   setVal,
+			}},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			set1 := New()
+			set1.Append(tc.values1...)
+
+			set2 := New()
+			set2.Append(tc.values2...)
+
+			diffSet1 := set1.Difference(set2)
+			for val := range diffSet1.set {
+				if !tc.expSet1.Contains(val) {
+					t.Errorf("expected %v, but not found", val)
+				}
+			}
+
+			diffSet2 := set2.Difference(set1)
+			for val := range diffSet2.set {
+				if !tc.expSet2.Contains(val) {
+					t.Errorf("expected %v, but not found", val)
+				}
+			}
+		})
+	}
+}
+
 var benchmarkData = []interface{}{
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 	true, false,

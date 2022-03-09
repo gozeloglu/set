@@ -39,5 +39,10 @@ items from the set1 and set2. It concatenates two sets and creates a new one.
 In order to take intersection of the sets, you can call the Intersection() method.
 
 	intersect := set1.Intersection(set2)
+
+You can find the difference between sets by Difference() method.
+
+	// Returns a set that contains the items which are only contained in the set1.
+	diffSet := set1.Difference(set2)
 */
 package set
