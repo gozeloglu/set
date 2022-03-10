@@ -720,6 +720,9 @@ func TestSet_Difference(t *testing.T) {
 			set2.Append(tc.values2...)
 
 			diffSet1 := set1.Difference(set2)
+			if diffSet1.Size() != tc.expSet1.Size() {
+				t.Errorf("expected set size %v, actual set size %v", tc.expSet1.Size(), diffSet1.Size())
+			}
 			for val := range diffSet1.set {
 				if !tc.expSet1.Contains(val) {
 					t.Errorf("expected %v, but not found", val)
@@ -727,10 +730,64 @@ func TestSet_Difference(t *testing.T) {
 			}
 
 			diffSet2 := set2.Difference(set1)
+			if diffSet2.Size() != tc.expSet2.Size() {
+				t.Errorf("expected set size %v, actual set size %v", tc.expSet2.Size(), diffSet2.Size())
+			}
 			for val := range diffSet2.set {
 				if !tc.expSet2.Contains(val) {
 					t.Errorf("expected %v, but not found", val)
 				}
+			}
+		})
+	}
+}
+
+func TestSet_IsSubset(t *testing.T) {
+	testCases := []struct {
+		name     string
+		values1  []interface{}
+		values2  []interface{}
+		isSubset bool
+	}{
+		{
+			name:     "Both empty set",
+			isSubset: true,
+		},
+		{
+			name:     "set1 is empty",
+			values2:  []interface{}{1, 2, 3},
+			isSubset: true,
+		},
+		{
+			name:     "set2 is empty",
+			values1:  []interface{}{1, 2, 3},
+			isSubset: false,
+		},
+		{
+			name:     "set1 is subset of set2",
+			values1:  []interface{}{1, 2, 3, 4},
+			values2:  []interface{}{1, 2, 3, 4, 5, 6},
+			isSubset: true,
+		},
+		{
+			name:     "set1 is not subset of set2",
+			values1:  []interface{}{1, 2, 3},
+			values2:  []interface{}{2, 3, 4},
+			isSubset: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			set1 := New()
+			set1.Append(tc.values1...)
+
+			set2 := New()
+			set2.Append(tc.values2...)
+
+			isSubset := set1.IsSubset(set2)
+			if isSubset != tc.isSubset {
+				t.Errorf("Expected %v, actual %v", tc.isSubset, isSubset)
 			}
 		})
 	}

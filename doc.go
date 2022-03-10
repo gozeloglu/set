@@ -44,5 +44,9 @@ You can find the difference between sets by Difference() method.
 
 	// Returns a set that contains the items which are only contained in the set1.
 	diffSet := set1.Difference(set2)
+
+You can check the set which is subset of the another set with IsSubset() method.
+
+	isSubset := set1.IsSubset(set2)	// Returns true is set1 is subset of set2.
 */
 package set

@@ -47,7 +47,7 @@ func main() {
 }
 ```
 
-## Supported methods:
+## Supported methods
 
 * `Add(val interface{})`
 * `Append(val ...interface{})`
@@ -61,6 +61,7 @@ func main() {
 * `Union()`
 * `Intersection()`
 * `Difference()`
+* `IsSubset`
 
 ## Tests
 

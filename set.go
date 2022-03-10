@@ -19,6 +19,7 @@ type S interface {
 	Union(set *Set) *Set
 	Intersection(set *Set) *Set
 	Difference(set *Set) *Set
+	IsSubset(set *Set) bool
 }
 
 // Set is the data structure which provides some functionalities.
@@ -142,4 +143,19 @@ func (s *Set) Difference(set *Set) *Set {
 		}
 	}
 	return diffSet
+}
+
+// IsSubset returns true if all items in the set exist in the given set.
+// Otherwise, it returns false.
+func (s *Set) IsSubset(set *Set) bool {
+	if s.Size() > set.Size() {
+		return false
+	}
+
+	for val := range s.set {
+		if !set.Contains(val) {
+			return false
+		}
+	}
+	return true
 }
