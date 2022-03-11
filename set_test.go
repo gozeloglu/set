@@ -750,7 +750,7 @@ func TestSet_IsSubset(t *testing.T) {
 		isSubset bool
 	}{
 		{
-			name:     "Both empty set",
+			name:     "Both empty sets",
 			isSubset: true,
 		},
 		{
@@ -788,6 +788,57 @@ func TestSet_IsSubset(t *testing.T) {
 			isSubset := set1.IsSubset(set2)
 			if isSubset != tc.isSubset {
 				t.Errorf("Expected %v, actual %v", tc.isSubset, isSubset)
+			}
+		})
+	}
+}
+
+func TestSet_IsSuperset(t *testing.T) {
+	testCases := []struct {
+		name       string
+		values1    []interface{}
+		values2    []interface{}
+		isSuperset bool
+	}{
+		{
+			name:       "Both empty sets",
+			isSuperset: true,
+		},
+		{
+			name:       "set1 is empty",
+			values2:    []interface{}{1, 2, 3, 4, 5},
+			isSuperset: false,
+		},
+		{
+			name:       "set2 is empty",
+			values1:    []interface{}{1, 2, 3, 4, 5},
+			isSuperset: true,
+		},
+		{
+			name:       "set1 is superset of set2",
+			values1:    []interface{}{1, 2, 3, 4, 5, 6, "test", true},
+			values2:    []interface{}{1, 2, 3, true},
+			isSuperset: true,
+		},
+		{
+			name:       "set1 is not superset of set2",
+			values1:    []interface{}{1, 2, 3, 4, 5, "test", true},
+			values2:    []interface{}{1, 2, 3, false},
+			isSuperset: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			set1 := New()
+			set1.Append(tc.values1...)
+
+			set2 := New()
+			set2.Append(tc.values2...)
+
+			isSuperset := set1.IsSuperset(set2)
+			if isSuperset != tc.isSuperset {
+				t.Errorf("Expected %v, actual %v", tc.isSuperset, isSuperset)
 			}
 		})
 	}

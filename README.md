@@ -61,7 +61,8 @@ func main() {
 * `Union()`
 * `Intersection()`
 * `Difference()`
-* `IsSubset`
+* `IsSubset()`
+* `IsSuperset()`
 
 ## Tests
 

@@ -20,6 +20,7 @@ type S interface {
 	Intersection(set *Set) *Set
 	Difference(set *Set) *Set
 	IsSubset(set *Set) bool
+	IsSuperset(set *Set) bool
 }
 
 // Set is the data structure which provides some functionalities.
@@ -154,6 +155,21 @@ func (s *Set) IsSubset(set *Set) bool {
 
 	for val := range s.set {
 		if !set.Contains(val) {
+			return false
+		}
+	}
+	return true
+}
+
+// IsSuperset returns true if all items in the given set exist in the set.
+// Otherwise, it returns false.
+func (s *Set) IsSuperset(set *Set) bool {
+	if s.Size() < set.Size() {
+		return false
+	}
+
+	for val := range set.set {
+		if !s.Contains(val) {
 			return false
 		}
 	}
