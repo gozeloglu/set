@@ -60,5 +60,10 @@ You can check whether the sets are equal with the Equal() method.
 You can check whether the sets are disjoint with IsDisjoint() method.
 
 	isDisjoint := set1.IsDisjoint(set2)	// Returns true is set1 and set2 are disjoint.
+
+You can get the symmetric difference of two sets by SymmetricDifference() method.
+
+	// Returns a set which is the symmetric difference of the two sets.
+	symDiffSet := set1.SymmetricDifference(set2)
 */
 package set

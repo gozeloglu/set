@@ -65,6 +65,7 @@ func main() {
 * `IsSuperset()`
 * `IsDisjoint()`
 * `Equal()`
+* `SymmetricDifference()`
 
 ## Tests
 

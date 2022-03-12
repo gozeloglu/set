@@ -18,6 +18,7 @@ type S interface {
 	IsSuperset(set *Set) bool
 	IsDisjoint(set *Set) bool
 	Equal(set *Set) bool
+	SymmetricDifference(set *Set) *Set
 }
 
 // Set is the data structure which provides some functionalities.
@@ -185,4 +186,10 @@ func (s *Set) Equal(set *Set) bool {
 		}
 	}
 	return true
+}
+
+// SymmetricDifference returns a set that contains from two sets, but not the
+// items are present in both sets.
+func (s *Set) SymmetricDifference(set *Set) *Set {
+	return s.Difference(set).Union(set.Difference(s))
 }

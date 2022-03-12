@@ -942,6 +942,86 @@ func TestSet_Equal(t *testing.T) {
 	}
 }
 
+func TestSet_SymmetricDifference(t *testing.T) {
+	testCases := []struct {
+		name    string
+		values1 []interface{}
+		values2 []interface{}
+		expSet  *Set
+	}{
+		{
+			name:   "Empty sets",
+			expSet: New(),
+		},
+		{
+			name:    "set1 is empty",
+			values2: []interface{}{1, 2, 3, 4},
+			expSet: &Set{set: map[interface{}]struct{}{
+				1: setVal,
+				2: setVal,
+				3: setVal,
+				4: setVal,
+			}},
+		},
+		{
+			name:    "Equal sets",
+			values1: []interface{}{1, 2, 3, 4},
+			values2: []interface{}{1, 2, 3, 4},
+			expSet:  New(),
+		},
+		{
+			name:    "All distinct item sets",
+			values1: []interface{}{1, 2, 3, 4},
+			values2: []interface{}{5, 6, 7, 8},
+			expSet: &Set{set: map[interface{}]struct{}{
+				1: setVal,
+				2: setVal,
+				3: setVal,
+				4: setVal,
+				5: setVal,
+				6: setVal,
+				7: setVal,
+				8: setVal,
+			}},
+		},
+		{
+			name:    "Symmetric difference sets",
+			values1: []interface{}{1, 2, 3, 4},
+			values2: []interface{}{2, 3, 4},
+			expSet: &Set{set: map[interface{}]struct{}{
+				1: setVal,
+			}},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			set1 := New()
+			set1.Append(tc.values1...)
+
+			set2 := New()
+			set2.Append(tc.values2...)
+
+			symDiffSet := set1.SymmetricDifference(set2)
+			if symDiffSet.Size() != tc.expSet.Size() {
+				t.Errorf("Expected set size %v, actual set size %v", tc.expSet.Size(), symDiffSet.Size())
+			}
+
+			for val := range symDiffSet.set {
+				if !tc.expSet.Contains(val) {
+					t.Errorf("expected %v expSet, but not contains", val)
+				}
+			}
+
+			for val := range tc.expSet.set {
+				if !symDiffSet.Contains(val) {
+					t.Errorf("expected %v in symDiffSet, but not contains", val)
+				}
+			}
+		})
+	}
+}
+
 var benchmarkData = []interface{}{
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 	true, false,
