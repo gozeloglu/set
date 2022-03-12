@@ -21,6 +21,7 @@ type S interface {
 	Difference(set *Set) *Set
 	IsSubset(set *Set) bool
 	IsSuperset(set *Set) bool
+	Equal(set *Set) bool
 }
 
 // Set is the data structure which provides some functionalities.
@@ -170,6 +171,20 @@ func (s *Set) IsSuperset(set *Set) bool {
 
 	for val := range set.set {
 		if !s.Contains(val) {
+			return false
+		}
+	}
+	return true
+}
+
+// Equal checks whether both sets contain exactly the same values.
+func (s *Set) Equal(set *Set) bool {
+	if s.Size() != set.Size() {
+		return false
+	}
+
+	for val := range s.set {
+		if !set.Contains(val) {
 			return false
 		}
 	}

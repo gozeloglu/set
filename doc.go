@@ -52,5 +52,9 @@ You can check the set which is subset of the another set with IsSubset() method.
 You can check the set which is superset of the another set with IsSuperset() method.
 
 	isSuperset := set1.IsSuperset(set2)	// Returns true is set1 is superset of set2.
+
+You can check whether the sets are equal with the Equal() method.
+
+	equal := set1.Equal(set2)	// Returns true if set1 and set2 values are exactly the same
 */
 package set

@@ -63,6 +63,7 @@ func main() {
 * `Difference()`
 * `IsSubset()`
 * `IsSuperset()`
+* `Equal()`
 
 ## Tests
 

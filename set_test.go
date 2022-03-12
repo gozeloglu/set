@@ -844,6 +844,53 @@ func TestSet_IsSuperset(t *testing.T) {
 	}
 }
 
+func TestSet_Equal(t *testing.T) {
+	testCases := []struct {
+		name    string
+		values1 []interface{}
+		values2 []interface{}
+		equal   bool
+	}{
+		{
+			name:  "Empty sets",
+			equal: true,
+		},
+		{
+			name:    "Sizes are different",
+			values1: []interface{}{1, 2, 3, 4},
+			values2: []interface{}{1, 2, 3, 4, 5},
+			equal:   false,
+		},
+		{
+			name:    "Not equal sets",
+			values1: []interface{}{1, 2, 3, 4, 5},
+			values2: []interface{}{1, 2, 3, 4, 6},
+			equal:   false,
+		},
+		{
+			name:    "Equal sets",
+			values1: []interface{}{1, 2, 3, 4, 5},
+			values2: []interface{}{1, 2, 3, 4, 5},
+			equal:   true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			set1 := New()
+			set1.Append(tc.values1...)
+
+			set2 := New()
+			set2.Append(tc.values2...)
+
+			equal := set1.Equal(set2)
+			if equal != tc.equal {
+				t.Errorf("Expected %v, actual %v", tc.equal, equal)
+			}
+		})
+	}
+}
+
 var benchmarkData = []interface{}{
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 	true, false,
