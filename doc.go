@@ -56,5 +56,9 @@ You can check the set which is superset of the another set with IsSuperset() met
 You can check whether the sets are equal with the Equal() method.
 
 	equal := set1.Equal(set2)	// Returns true if set1 and set2 values are exactly the same
+
+You can check whether the sets are disjoint with IsDisjoint() method.
+
+	isDisjoint := set1.IsDisjoint(set2)	// Returns true is set1 and set2 are disjoint.
 */
 package set

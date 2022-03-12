@@ -844,6 +844,57 @@ func TestSet_IsSuperset(t *testing.T) {
 	}
 }
 
+func TestSet_IsDisjoint(t *testing.T) {
+	testCases := []struct {
+		name       string
+		values1    []interface{}
+		values2    []interface{}
+		isDisjoint bool
+	}{
+		{
+			name:       "Empty sets",
+			isDisjoint: true,
+		},
+		{
+			name:       "set1 is empty",
+			values2:    []interface{}{1, 2, 3, 4},
+			isDisjoint: true,
+		},
+		{
+			name:       "set2 is empty",
+			values1:    []interface{}{1, 2, 3, 4},
+			isDisjoint: true,
+		},
+		{
+			name:       "Disjoint sets",
+			values1:    []interface{}{1, 2, 3, 4},
+			values2:    []interface{}{5, 6, 7, 8},
+			isDisjoint: true,
+		},
+		{
+			name:       "Not disjoint sets",
+			values1:    []interface{}{1, 2, 3, 4},
+			values2:    []interface{}{1, 2, 5, 6, 7},
+			isDisjoint: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			set1 := New()
+			set1.Append(tc.values1...)
+
+			set2 := New()
+			set2.Append(tc.values2...)
+
+			isDisjoint := set1.IsDisjoint(set2)
+			if isDisjoint != tc.isDisjoint {
+				t.Errorf("Expected %v, actual %v", tc.isDisjoint, isDisjoint)
+			}
+		})
+	}
+}
+
 func TestSet_Equal(t *testing.T) {
 	testCases := []struct {
 		name    string

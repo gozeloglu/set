@@ -21,6 +21,7 @@ type S interface {
 	Difference(set *Set) *Set
 	IsSubset(set *Set) bool
 	IsSuperset(set *Set) bool
+	IsDisjoint(set *Set) bool
 	Equal(set *Set) bool
 }
 
@@ -171,6 +172,19 @@ func (s *Set) IsSuperset(set *Set) bool {
 
 	for val := range set.set {
 		if !s.Contains(val) {
+			return false
+		}
+	}
+	return true
+}
+
+// IsDisjoint returns true if none of the items are present in the sets.
+func (s *Set) IsDisjoint(set *Set) bool {
+	if s.Size() == 0 || set.Size() == 0 {
+		return true
+	}
+	for val := range s.set {
+		if set.Contains(val) {
 			return false
 		}
 	}
