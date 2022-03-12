@@ -1,10 +1,5 @@
 package set
 
-import (
-	"math/rand"
-	"time"
-)
-
 // S is set interface.
 type S interface {
 	Add(val interface{})
@@ -32,10 +27,6 @@ type Set struct {
 
 // setVal is the value of the map. It has 0 byte.
 var setVal = struct{}{}
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
 
 // New creates a set data structure.
 func New() *Set {
@@ -73,19 +64,10 @@ func (s Set) Size() uint {
 // Pop returns a random value from the set. If there is no element in set, it
 // returns nil.
 func (s Set) Pop() interface{} {
-	if len(s.set) == 0 {
-		return nil
-	}
-	idx := rand.Int63n(int64(len(s.set)))
-	var randVal interface{}
 	for val := range s.set {
-		if idx == 0 {
-			randVal = val
-			break
-		}
-		idx--
+		return val
 	}
-	return randVal
+	return nil
 }
 
 // Clear removes everything from the set.
