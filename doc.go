@@ -10,7 +10,7 @@ without any dependency.
 	)
 
 	func main() {
-		s := set.New()
+		s := set.New(set.ThreadUnsafe)
 		s.Add(123)
 
 		exist := s.Contains(123)
