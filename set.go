@@ -34,36 +34,41 @@ func New() *Set {
 	return &Set{set: make(map[interface{}]struct{})}
 }
 
-// Add adds a new values to set if there is enough capacity.
+// Add adds a new values to set if there is enough capacity. It is not a
+// thread-safe method. It does not handle the concurrency.
 func (s *Set) Add(val interface{}) {
 	s.set[val] = setVal
 }
 
-// Append adds multiple values into set.
+// Append adds multiple values into set. It is not a thread-safe method. It
+// does not handle the concurrency.
 func (s *Set) Append(values ...interface{}) {
 	for _, val := range values {
 		s.Add(val)
 	}
 }
 
-// Remove deletes the given value.
+// Remove deletes the given value. It is not a thread-safe method. It does not
+// handle the concurrency.
 func (s *Set) Remove(val interface{}) {
 	delete(s.set, val)
 }
 
-// Contains checks the value whether exists in the set.
+// Contains checks the value whether exists in the set. It is not a thread-safe
+// method. It does not handle the concurrency.
 func (s Set) Contains(val interface{}) bool {
 	_, ok := s.set[val]
 	return ok
 }
 
 // Size returns the length of the set which means that number of value of the set.
+// It is not a thread-safe method. It does not handle the concurrency.
 func (s Set) Size() uint {
 	return uint(len(s.set))
 }
 
 // Pop returns a random value from the set. If there is no element in set, it
-// returns nil.
+// returns nil. It is not a thread-safe method. It does not handle the concurrency.
 func (s Set) Pop() interface{} {
 	for val := range s.set {
 		return val
@@ -71,18 +76,21 @@ func (s Set) Pop() interface{} {
 	return nil
 }
 
-// Clear removes everything from the set.
+// Clear removes everything from the set. It is not a thread-safe method. It does
+// not handle the concurrency.
 func (s *Set) Clear() {
 	s.set = make(map[interface{}]struct{})
 }
 
-// Empty checks whether the set is empty.
+// Empty checks whether the set is empty. It is not a thread-safe method. It does
+// not handle the concurrency.
 func (s Set) Empty() bool {
 	return len(s.set) == 0
 }
 
 // Slice returns the elements of the set as a slice. The slice type is
-// interface{}. The elements can be in any order.
+// interface{}. The elements can be in any order. It is not a thread-safe method.
+// It does not handle the concurrency.
 func (s Set) Slice() []interface{} {
 	values := make([]interface{}, s.Size())
 
@@ -95,7 +103,8 @@ func (s Set) Slice() []interface{} {
 }
 
 // Union returns a new Set that contains all items from the receiver Set and
-// all items from the given Set.
+// all items from the given Set. It is not a thread-safe method. It does  not
+// handle the concurrency.
 func (s Set) Union(set *Set) *Set {
 	unionSet := New()
 	for val := range s.set {
@@ -108,7 +117,8 @@ func (s Set) Union(set *Set) *Set {
 }
 
 // Intersection takes the common values from both sets and returns a new set
-// that stores the common ones.
+// that stores the common ones. It is not a thread-safe method. It does  not
+// handle the concurrency.
 func (s *Set) Intersection(set *Set) *Set {
 	intersectSet := New()
 	for val := range s.set {
@@ -120,7 +130,7 @@ func (s *Set) Intersection(set *Set) *Set {
 }
 
 // Difference takes the items that only is stored in s, receiver set. It returns
-// a new set.
+// a new set. It is not a thread-safe method. It does not handle the concurrency.
 func (s *Set) Difference(set *Set) *Set {
 	diffSet := New()
 	for val := range s.set {
@@ -132,7 +142,8 @@ func (s *Set) Difference(set *Set) *Set {
 }
 
 // IsSubset returns true if all items in the set exist in the given set.
-// Otherwise, it returns false.
+// Otherwise, it returns false. It is not a thread-safe method. It does not handle
+// the concurrency.
 func (s *Set) IsSubset(set *Set) bool {
 	if s.Size() > set.Size() {
 		return false
@@ -147,7 +158,8 @@ func (s *Set) IsSubset(set *Set) bool {
 }
 
 // IsSuperset returns true if all items in the given set exist in the set.
-// Otherwise, it returns false.
+// Otherwise, it returns false. It is not a thread-safe method. It does not
+// handle the concurrency.
 func (s *Set) IsSuperset(set *Set) bool {
 	if s.Size() < set.Size() {
 		return false
@@ -161,7 +173,8 @@ func (s *Set) IsSuperset(set *Set) bool {
 	return true
 }
 
-// IsDisjoint returns true if none of the items are present in the sets.
+// IsDisjoint returns true if none of the items are present in the sets. It is
+// not a thread-safe method. It does not handle the concurrency.
 func (s *Set) IsDisjoint(set *Set) bool {
 	if s.Size() == 0 || set.Size() == 0 {
 		return true
@@ -174,7 +187,8 @@ func (s *Set) IsDisjoint(set *Set) bool {
 	return true
 }
 
-// Equal checks whether both sets contain exactly the same values.
+// Equal checks whether both sets contain exactly the same values. It is not a
+// thread-safe method. It does not handle the concurrency.
 func (s *Set) Equal(set *Set) bool {
 	if s.Size() != set.Size() {
 		return false
@@ -189,7 +203,8 @@ func (s *Set) Equal(set *Set) bool {
 }
 
 // SymmetricDifference returns a set that contains from two sets, but not the
-// items are present in both sets.
+// items are present in both sets. It is not a thread-safe method. It does not
+// handle the concurrency.
 func (s *Set) SymmetricDifference(set *Set) *Set {
 	return s.Difference(set).Union(set.Difference(s))
 }
