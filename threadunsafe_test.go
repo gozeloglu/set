@@ -15,7 +15,7 @@ func TestSet_New(t *testing.T) {
 	}
 }
 
-func TestSet_Add(t *testing.T) {
+func TestThreadUnsafeSet_Add(t *testing.T) {
 	testCases := []struct {
 		name   string
 		set    Set
@@ -91,7 +91,7 @@ func TestSet_Add(t *testing.T) {
 	}
 }
 
-func TestSet_Append(t *testing.T) {
+func TestThreadUnsafeSet_Append(t *testing.T) {
 	testCases := []struct {
 		name   string
 		set    Set
@@ -132,7 +132,7 @@ func TestSet_Append(t *testing.T) {
 	}
 }
 
-func TestSet_Remove(t *testing.T) {
+func TestThreadUnsafeSet_Remove(t *testing.T) {
 	testCases := []struct {
 		name            string
 		set             Set
@@ -203,7 +203,7 @@ func TestSet_Remove(t *testing.T) {
 	}
 }
 
-func TestSet_Contains(t *testing.T) {
+func TestThreadUnsafeSet_Contains(t *testing.T) {
 	testCases := []struct {
 		name     string
 		set      Set
@@ -287,7 +287,7 @@ func TestSet_Contains(t *testing.T) {
 	}
 }
 
-func TestSet_Size(t *testing.T) {
+func TestThreadUnsafeSet_Size(t *testing.T) {
 	testCases := []struct {
 		name         string
 		set          Set
@@ -346,7 +346,7 @@ func TestSet_Size(t *testing.T) {
 	}
 }
 
-func TestSet_Pop(t *testing.T) {
+func TestThreadUnsafeSet_Pop(t *testing.T) {
 	testCases := []struct {
 		name    string
 		set     Set
@@ -391,7 +391,7 @@ func TestSet_Pop(t *testing.T) {
 	}
 }
 
-func TestSet_Clear(t *testing.T) {
+func TestThreadUnsafeSet_Clear(t *testing.T) {
 	testCases := []struct {
 		name   string
 		set    Set
@@ -431,7 +431,7 @@ func TestSet_Clear(t *testing.T) {
 	}
 }
 
-func TestSet_Empty(t *testing.T) {
+func TestThreadUnsafeSet_Empty(t *testing.T) {
 	testCases := []struct {
 		name         string
 		set          Set
@@ -490,7 +490,7 @@ func TestSet_Empty(t *testing.T) {
 	}
 }
 
-func TestSet_Slice(t *testing.T) {
+func TestThreadUnsafeSet_Slice(t *testing.T) {
 	testCases := []struct {
 		name   string
 		values []interface{}
@@ -528,7 +528,7 @@ func TestSet_Slice(t *testing.T) {
 	}
 }
 
-func TestSet_Union(t *testing.T) {
+func TestThreadUnsafeSet_Union(t *testing.T) {
 	testCases := []struct {
 		name    string
 		values1 []interface{}
@@ -610,7 +610,7 @@ func TestSet_Union(t *testing.T) {
 	}
 }
 
-func TestSet_Intersection(t *testing.T) {
+func TestThreadUnsafeSet_Intersection(t *testing.T) {
 	testCases := []struct {
 		name    string
 		values1 []interface{}
@@ -676,7 +676,7 @@ func TestSet_Intersection(t *testing.T) {
 	}
 }
 
-func TestSet_Difference(t *testing.T) {
+func TestThreadUnsafeSet_Difference(t *testing.T) {
 	testCases := []struct {
 		name    string
 		values1 []interface{}
@@ -764,7 +764,7 @@ func TestSet_Difference(t *testing.T) {
 	}
 }
 
-func TestSet_IsSubset(t *testing.T) {
+func TestThreadUnsafeSet_IsSubset(t *testing.T) {
 	testCases := []struct {
 		name     string
 		values1  []interface{}
@@ -815,7 +815,7 @@ func TestSet_IsSubset(t *testing.T) {
 	}
 }
 
-func TestSet_IsSuperset(t *testing.T) {
+func TestThreadUnsafeSet_IsSuperset(t *testing.T) {
 	testCases := []struct {
 		name       string
 		values1    []interface{}
@@ -866,7 +866,7 @@ func TestSet_IsSuperset(t *testing.T) {
 	}
 }
 
-func TestSet_IsDisjoint(t *testing.T) {
+func TestThreadUnsafeSet_IsDisjoint(t *testing.T) {
 	testCases := []struct {
 		name       string
 		values1    []interface{}
@@ -917,7 +917,7 @@ func TestSet_IsDisjoint(t *testing.T) {
 	}
 }
 
-func TestSet_Equal(t *testing.T) {
+func TestThreadUnsafeSet_Equal(t *testing.T) {
 	testCases := []struct {
 		name    string
 		values1 []interface{}
@@ -964,7 +964,7 @@ func TestSet_Equal(t *testing.T) {
 	}
 }
 
-func TestSet_SymmetricDifference(t *testing.T) {
+func TestThreadUnsafeSet_SymmetricDifference(t *testing.T) {
 	testCases := []struct {
 		name    string
 		values1 []interface{}
