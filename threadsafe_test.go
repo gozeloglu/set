@@ -88,3 +88,48 @@ func TestThreadSafeSet_Add(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_Append(t *testing.T) {
+	testCases := []struct {
+		name   string
+		values []interface{}
+		expLen uint
+	}{
+		{
+			name:   "Append nothing",
+			expLen: 0,
+		},
+		{
+			name:   "Append single value",
+			values: []interface{}{"single"},
+			expLen: 1,
+		},
+		{
+			name:   "Append multiple values",
+			values: []interface{}{1, 2, 3, 4},
+			expLen: 4,
+		},
+		{
+			name:   "Append different types",
+			values: []interface{}{1, 2, 3.5, uint16(4), "set", "key", true, byte('a')},
+			expLen: 8,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := newThreadSafeSet()
+			s.Append(tc.values...)
+
+			size := s.Size()
+			if size != tc.expLen {
+				t.Errorf("expected length %v, actual length %v", tc.expLen, size)
+			}
+			for _, v := range tc.values {
+				if _, ok := s.set[v]; !ok {
+					t.Errorf("expected %v, but not found", v)
+				}
+			}
+		})
+	}
+}
