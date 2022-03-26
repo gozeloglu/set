@@ -133,3 +133,51 @@ func TestThreadSafeSet_Append(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_Remove(t *testing.T) {
+	testCases := []struct {
+		name            string
+		values          []interface{}
+		expRemoveValues []interface{}
+		remainingValues []interface{}
+		expSize         uint
+	}{
+		{
+			name:            "Remove from the empty set",
+			expRemoveValues: []interface{}{1, 2, 3},
+		},
+		{
+			name:            "Remove from non-empty set",
+			values:          []interface{}{1, 2, 3, 4.98, "remove", "set", byte('a')},
+			expRemoveValues: []interface{}{1, 2, 3, 4.98, "remove", "set", byte('a')},
+		},
+		{
+			name:            "Remove not exist values",
+			values:          []interface{}{1, 2, 3, 4.98, "remove", "set", byte('a')},
+			expRemoveValues: []interface{}{100, 22, 1.98, "str", byte('a')},
+			remainingValues: []interface{}{1, 2, 3, 4.98, "remove", "set"},
+			expSize:         6,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := newThreadSafeSet()
+			s.Append(tc.values...)
+
+			for _, v := range tc.expRemoveValues {
+				s.Remove(v)
+			}
+
+			size := s.Size()
+			if size != tc.expSize {
+				t.Errorf("expected size %v, actual size %v", tc.expSize, size)
+			}
+			for _, v := range tc.remainingValues {
+				if _, ok := s.set[v]; !ok {
+					t.Errorf("expected %v, but nof found in set", v)
+				}
+			}
+		})
+	}
+}
