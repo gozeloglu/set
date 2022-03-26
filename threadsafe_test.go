@@ -4,47 +4,47 @@ import "testing"
 
 func TestThreadSafeSet_Add(t *testing.T) {
 	testCases := []struct {
-		name   string
-		values []interface{}
-		expLen uint
-		expSet map[interface{}]struct{}
+		name    string
+		values  []interface{}
+		expSize uint
+		expSet  map[interface{}]struct{}
 	}{
 		{
-			name:   "Add int value",
-			values: []interface{}{100},
-			expLen: 1,
+			name:    "Add int value",
+			values:  []interface{}{100},
+			expSize: 1,
 			expSet: map[interface{}]struct{}{
 				100: setVal,
 			},
 		},
 		{
-			name:   "Add float value",
-			values: []interface{}{12.332},
-			expLen: 1,
+			name:    "Add float value",
+			values:  []interface{}{12.332},
+			expSize: 1,
 			expSet: map[interface{}]struct{}{
 				12.332: setVal,
 			},
 		},
 		{
-			name:   "Add bool value",
-			values: []interface{}{true},
-			expLen: 1,
+			name:    "Add bool value",
+			values:  []interface{}{true},
+			expSize: 1,
 			expSet: map[interface{}]struct{}{
 				true: setVal,
 			},
 		},
 		{
-			name:   "Add byte value",
-			values: []interface{}{byte('e')},
-			expLen: 1,
+			name:    "Add byte value",
+			values:  []interface{}{byte('e')},
+			expSize: 1,
 			expSet: map[interface{}]struct{}{
 				byte('e'): setVal,
 			},
 		},
 		{
-			name:   "Add string value",
-			values: []interface{}{"str-key"},
-			expLen: 1,
+			name:    "Add string value",
+			values:  []interface{}{"str-key"},
+			expSize: 1,
 			expSet: map[interface{}]struct{}{
 				"str-key": setVal,
 			},
@@ -56,7 +56,7 @@ func TestThreadSafeSet_Add(t *testing.T) {
 			}{
 				key: "key",
 			}},
-			expLen: 5,
+			expSize: 5,
 			expSet: map[interface{}]struct{}{
 				1:         setVal,
 				1.3:       setVal,
@@ -77,8 +77,8 @@ func TestThreadSafeSet_Add(t *testing.T) {
 			for _, v := range tc.values {
 				s.Add(v)
 			}
-			if s.Size() != tc.expLen {
-				t.Errorf("expected length %v, actual length %v", tc.expLen, s.Size())
+			if s.Size() != tc.expSize {
+				t.Errorf("expected length %v, actual length %v", tc.expSize, s.Size())
 			}
 			for v := range s.set {
 				if _, ok := tc.expSet[v]; !ok {
@@ -91,28 +91,28 @@ func TestThreadSafeSet_Add(t *testing.T) {
 
 func TestThreadSafeSet_Append(t *testing.T) {
 	testCases := []struct {
-		name   string
-		values []interface{}
-		expLen uint
+		name    string
+		values  []interface{}
+		expSize uint
 	}{
 		{
-			name:   "Append nothing",
-			expLen: 0,
+			name:    "Append nothing",
+			expSize: 0,
 		},
 		{
-			name:   "Append single value",
-			values: []interface{}{"single"},
-			expLen: 1,
+			name:    "Append single value",
+			values:  []interface{}{"single"},
+			expSize: 1,
 		},
 		{
-			name:   "Append multiple values",
-			values: []interface{}{1, 2, 3, 4},
-			expLen: 4,
+			name:    "Append multiple values",
+			values:  []interface{}{1, 2, 3, 4},
+			expSize: 4,
 		},
 		{
-			name:   "Append different types",
-			values: []interface{}{1, 2, 3.5, uint16(4), "set", "key", true, byte('a')},
-			expLen: 8,
+			name:    "Append different types",
+			values:  []interface{}{1, 2, 3.5, uint16(4), "set", "key", true, byte('a')},
+			expSize: 8,
 		},
 	}
 
@@ -122,8 +122,8 @@ func TestThreadSafeSet_Append(t *testing.T) {
 			s.Append(tc.values...)
 
 			size := s.Size()
-			if size != tc.expLen {
-				t.Errorf("expected length %v, actual length %v", tc.expLen, size)
+			if size != tc.expSize {
+				t.Errorf("expected length %v, actual length %v", tc.expSize, size)
 			}
 			for _, v := range tc.values {
 				if _, ok := s.set[v]; !ok {
