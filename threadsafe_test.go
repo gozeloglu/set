@@ -800,3 +800,49 @@ func TestThreadSafeSet_IsDisjoint(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_Equal(t *testing.T) {
+	testCases := []struct {
+		name    string
+		values1 []interface{}
+		values2 []interface{}
+		equal   bool
+	}{
+		{
+			name:  "Empty sets",
+			equal: true,
+		},
+		{
+			name:    "Sizes are different",
+			values1: []interface{}{1, 2, "test"},
+			values2: []interface{}{1, 2, 3, "test", true},
+			equal:   false,
+		},
+		{
+			name:    "Not equal sets",
+			values1: []interface{}{1, 2, 3, "test", false},
+			values2: []interface{}{1, 2, "test", true, false},
+			equal:   false,
+		},
+		{
+			name:    "Equal sets",
+			values1: []interface{}{1, 2, 3, "test", true},
+			values2: []interface{}{1, 2, 3, "test", true},
+			equal:   true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s1 := newThreadSafeSet()
+			s2 := newThreadSafeSet()
+			s1.Append(tc.values1...)
+			s2.Append(tc.values2...)
+
+			equal := s1.Equal(s2)
+			if equal != tc.equal {
+				t.Errorf("expected %v, actual %v", tc.equal, equal)
+			}
+		})
+	}
+}
