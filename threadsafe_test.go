@@ -291,3 +291,30 @@ func TestThreadSafeSet_Pop(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_Clear(t *testing.T) {
+	testCases := []struct {
+		name   string
+		values []interface{}
+	}{
+		{
+			name: "Clear empty set",
+		},
+		{
+			name:   "Clear non-empty set",
+			values: []interface{}{1, 2, 3, 4.542, "test", true},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := newThreadSafeSet()
+			s.Append(tc.values...)
+			s.Clear()
+			size := s.Size()
+			if size != 0 {
+				t.Errorf("expected size is 0, actual size %v", size)
+			}
+		})
+	}
+}
