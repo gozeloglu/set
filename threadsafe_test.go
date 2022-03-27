@@ -750,3 +750,53 @@ func TestThreadSafeSet_IsSuperset(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_IsDisjoint(t *testing.T) {
+	testCases := []struct {
+		name       string
+		values1    []interface{}
+		values2    []interface{}
+		isDisjoint bool
+	}{
+		{
+			name:       "Both empty sets",
+			isDisjoint: true,
+		},
+		{
+			name:       "First set is empty",
+			values1:    []interface{}{1, 2, 3, 4, true},
+			isDisjoint: true,
+		},
+		{
+			name:       "Second set is empty",
+			values2:    []interface{}{1, 2, 3, "test", false},
+			isDisjoint: true,
+		},
+		{
+			name:       "Disjoint sets",
+			values1:    []interface{}{1, 2, "test", true},
+			values2:    []interface{}{4, 2.34, "disjoint", false},
+			isDisjoint: true,
+		},
+		{
+			name:       "Not disjoint sets",
+			values1:    []interface{}{1, 2, "test", false},
+			values2:    []interface{}{1, true},
+			isDisjoint: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s1 := newThreadSafeSet()
+			s2 := newThreadSafeSet()
+			s1.Append(tc.values1...)
+			s2.Append(tc.values2...)
+
+			isDisjoint := s1.IsDisjoint(s2)
+			if isDisjoint != tc.isDisjoint {
+				t.Errorf("expected %v, actual %v", tc.isDisjoint, isDisjoint)
+			}
+		})
+	}
+}

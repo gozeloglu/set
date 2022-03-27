@@ -221,7 +221,7 @@ func (s *ThreadSafeSet) IsDisjoint(set Set) bool {
 	s.rw.RLock()
 	o.rw.RLock()
 	defer s.rw.RUnlock()
-	defer s.rw.RUnlock()
+	defer o.rw.RUnlock()
 
 	if s.size() == 0 || o.size() == 0 {
 		return true
