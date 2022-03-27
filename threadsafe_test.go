@@ -694,3 +694,53 @@ func TestThreadSafeSet_IsSubset(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_IsSuperset(t *testing.T) {
+	testCases := []struct {
+		name       string
+		values1    []interface{}
+		values2    []interface{}
+		isSuperset bool
+	}{
+		{
+			name:       "Both empty sets",
+			isSuperset: true,
+		},
+		{
+			name:       "First set is empty",
+			values2:    []interface{}{1, 2, 3, "test", 3.2, true},
+			isSuperset: false,
+		},
+		{
+			name:       "Second set is empty",
+			values1:    []interface{}{1, 2, 3.21, "test", false},
+			isSuperset: true,
+		},
+		{
+			name:       "First set is superset of second set",
+			values1:    []interface{}{1, 2, 3, 4.123, "test", false},
+			values2:    []interface{}{1, 2, "test"},
+			isSuperset: true,
+		},
+		{
+			name:       "First set is not superset of second set",
+			values1:    []interface{}{1, 2, 3, "test", false},
+			values2:    []interface{}{1, 2, "set"},
+			isSuperset: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s1 := newThreadSafeSet()
+			s2 := newThreadSafeSet()
+			s1.Append(tc.values1...)
+			s2.Append(tc.values2...)
+
+			isSuperset := s1.IsSuperset(s2)
+			if isSuperset != tc.isSuperset {
+				t.Errorf("expected %v, actual %v", tc.isSuperset, isSuperset)
+			}
+		})
+	}
+}
