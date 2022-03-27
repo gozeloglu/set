@@ -638,3 +638,59 @@ func TestThreadSafeSet_Difference(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_IsSubset(t *testing.T) {
+	testCases := []struct {
+		name     string
+		values1  []interface{}
+		values2  []interface{}
+		isSubset bool
+	}{
+		{
+			name:     "Both empty sets",
+			isSubset: true,
+		},
+		{
+			name:     "First set is empty",
+			values2:  []interface{}{1, 2, 3, 4, true, "test"},
+			isSubset: true,
+		},
+		{
+			name:     "Second set is empty",
+			values1:  []interface{}{1, 2, 3, 4, true, "test"},
+			isSubset: false,
+		},
+		{
+			name:     "First set is subset of the second set",
+			values1:  []interface{}{1, 2, "test"},
+			values2:  []interface{}{1, 2, 5.12, "test", true},
+			isSubset: true,
+		},
+		{
+			name:     "First set is not subset of the second set",
+			values1:  []interface{}{1, 2, 3, 4.23},
+			values2:  []interface{}{1, "test"},
+			isSubset: false,
+		},
+		{
+			name:     "Equal sets",
+			values1:  []interface{}{1, 2, 3},
+			values2:  []interface{}{1, 2, 3},
+			isSubset: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s1 := newThreadSafeSet()
+			s2 := newThreadSafeSet()
+			s1.Append(tc.values1...)
+			s2.Append(tc.values2...)
+
+			isSubset := s1.IsSubset(s2)
+			if isSubset != tc.isSubset {
+				t.Errorf("expected %v, actual %v", tc.isSubset, isSubset)
+			}
+		})
+	}
+}
