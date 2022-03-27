@@ -482,3 +482,64 @@ func TestThreadSafeSet_Union(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_Intersection(t *testing.T) {
+	testCases := []struct {
+		name    string
+		values1 []interface{}
+		values2 []interface{}
+		expSet  Set
+	}{
+		{
+			name:   "Both empty sets",
+			expSet: New(ThreadSafe),
+		},
+		{
+			name:    "First set is empty",
+			values2: []interface{}{1, 2, 3, 4.12, "test", true},
+			expSet:  New(ThreadSafe),
+		},
+		{
+			name:    "Second set is empty",
+			values1: []interface{}{1, 2, 3, 4.12, "test", true},
+			expSet:  New(ThreadSafe),
+		},
+		{
+			name:    "Both sets are not empty",
+			values1: []interface{}{1, 2, 3.12, "test", false},
+			values2: []interface{}{1, 2, "test", 'b'},
+			expSet: &ThreadSafeSet{set: map[interface{}]struct{}{
+				1:      setVal,
+				2:      setVal,
+				"test": setVal,
+			}},
+		},
+		{
+			name:    "No intersection",
+			values1: []interface{}{1, 2, 3, false, "test"},
+			values2: []interface{}{3.21, true, "set"},
+			expSet:  New(ThreadSafe),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s1 := newThreadSafeSet()
+			s2 := newThreadSafeSet()
+			s1.Append(tc.values1...)
+			s2.Append(tc.values2...)
+			intersectionSet := s1.Intersection(s2)
+
+			if intersectionSet.Size() != tc.expSet.Size() {
+				t.Errorf("expected size %v, actual size %v", tc.expSet.Size(), intersectionSet.Size())
+			}
+
+			ts := tc.expSet.(*ThreadSafeSet)
+			for val := range ts.set {
+				if !intersectionSet.Contains(val) {
+					t.Errorf("expected %v, but not exists in intersection set", val)
+				}
+			}
+		})
+	}
+}
