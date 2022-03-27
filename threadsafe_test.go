@@ -551,21 +551,19 @@ func TestThreadSafeSet_Difference(t *testing.T) {
 		name    string
 		values1 []interface{}
 		values2 []interface{}
-		expSet  Set
+		expSet1 Set
+		expSet2 Set
 	}{
 		{
-			name:   "Both empty sets",
-			expSet: New(ThreadSafe),
+			name:    "Both empty sets",
+			expSet1: New(ThreadSafe),
+			expSet2: New(ThreadSafe),
 		},
 		{
 			name:    "First set is empty",
 			values2: []interface{}{1, 2, 3, 4.12, "test"},
-			expSet:  New(ThreadSafe),
-		},
-		{
-			name:    "Second set is empty",
-			values1: []interface{}{1, 2, 3, 4.12, "test"},
-			expSet: &ThreadSafeSet{set: map[interface{}]struct{}{
+			expSet1: New(ThreadSafe),
+			expSet2: &ThreadSafeSet{set: map[interface{}]struct{}{
 				1:      setVal,
 				2:      setVal,
 				3:      setVal,
@@ -574,20 +572,38 @@ func TestThreadSafeSet_Difference(t *testing.T) {
 			}},
 		},
 		{
+			name:    "Second set is empty",
+			values1: []interface{}{1, 2, 3, 4.12, "test"},
+			expSet1: &ThreadSafeSet{set: map[interface{}]struct{}{
+				1:      setVal,
+				2:      setVal,
+				3:      setVal,
+				4.12:   setVal,
+				"test": setVal,
+			}},
+			expSet2: New(ThreadSafe),
+		},
+		{
 			name:    "Both sets are not empty",
 			values1: []interface{}{1, 2, 3, 3.12, "test", false},
 			values2: []interface{}{1, 2, 3.3, "test", "set", true},
-			expSet: &ThreadSafeSet{set: map[interface{}]struct{}{
+			expSet1: &ThreadSafeSet{set: map[interface{}]struct{}{
 				3:     setVal,
 				3.12:  setVal,
 				false: setVal,
+			}},
+			expSet2: &ThreadSafeSet{set: map[interface{}]struct{}{
+				3.3:   setVal,
+				"set": setVal,
+				true:  setVal,
 			}},
 		},
 		{
 			name:    "No difference",
 			values1: []interface{}{1, 2, 3.3, "test", "set", true},
 			values2: []interface{}{1, 2, 3.3, "test", "set", true},
-			expSet:  New(ThreadSafe),
+			expSet1: New(ThreadSafe),
+			expSet2: New(ThreadSafe),
 		},
 	}
 
@@ -598,14 +614,25 @@ func TestThreadSafeSet_Difference(t *testing.T) {
 			s1.Append(tc.values1...)
 			s2.Append(tc.values2...)
 
-			diffSet := s1.Difference(s2)
-			if diffSet.Size() != tc.expSet.Size() {
-				t.Errorf("expected size %v, actual size %v", tc.expSet.Size(), diffSet.Size())
+			diffSet1 := s1.Difference(s2)
+			if diffSet1.Size() != tc.expSet1.Size() {
+				t.Errorf("expected size %v, actual size %v", tc.expSet1.Size(), diffSet1.Size())
 			}
-			ts := tc.expSet.(*ThreadSafeSet)
-			for val := range ts.set {
-				if !diffSet.Contains(val) {
-					t.Errorf("expected %v, but not exists in difference set", val)
+			ts1 := tc.expSet1.(*ThreadSafeSet)
+			for val := range ts1.set {
+				if !diffSet1.Contains(val) {
+					t.Errorf("expected %v, but not exists in difference set-1", val)
+				}
+			}
+
+			diffSet2 := s2.Difference(s1)
+			if diffSet2.Size() != tc.expSet2.Size() {
+				t.Errorf("expected size %v, actual size %v", tc.expSet2.Size(), diffSet2.Size())
+			}
+			ts2 := tc.expSet2.(*ThreadSafeSet)
+			for val := range ts2.set {
+				if !diffSet2.Contains(val) {
+					t.Errorf("expected %v, bot not exists in difference set-2", val)
 				}
 			}
 		})

@@ -1032,7 +1032,7 @@ func TestThreadUnsafeSet_SymmetricDifference(t *testing.T) {
 			sds := symDiffSet.(*ThreadUnsafeSet)
 			for val := range sds.set {
 				if !tc.expSet.Contains(val) {
-					t.Errorf("expected %v expSet, but not contains", val)
+					t.Errorf("expected %v expSet1, but not contains", val)
 				}
 			}
 
