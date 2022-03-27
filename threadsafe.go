@@ -100,7 +100,7 @@ func (s *ThreadSafeSet) Empty() bool {
 func (s *ThreadSafeSet) Slice() []interface{} {
 	s.rw.RLock()
 	defer s.rw.RUnlock()
-	values := make([]interface{}, s.Size())
+	values := make([]interface{}, s.size())
 
 	i := 0
 	for k := range s.set {

@@ -363,3 +363,34 @@ func TestThreadSafeSet_Empty(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_Slice(t *testing.T) {
+	testCases := []struct {
+		name   string
+		values []interface{}
+	}{
+		{
+			name: "Empty set",
+		},
+		{
+			name:   "Non-empty set slice",
+			values: []interface{}{1, 2, 3, 4.123, "test", true, 'b'},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := newThreadSafeSet()
+			s.Append(tc.values...)
+			setSlice := s.Slice()
+			if len(setSlice) != len(tc.values) {
+				t.Errorf("expected size %v, actual size %v", len(tc.values), len(setSlice))
+			}
+			for _, v := range setSlice {
+				if !s.Contains(v) {
+					t.Errorf("%v should be in set, but not found", v)
+				}
+			}
+		})
+	}
+}
