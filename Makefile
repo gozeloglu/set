@@ -4,7 +4,7 @@ test:
 test-v:
 	go test ./... -v
 
-test-race:
+race:
 	go test ./... -race
 
 cover:
