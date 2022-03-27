@@ -260,3 +260,34 @@ func TestThreadSafeSet_Size(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_Pop(t *testing.T) {
+	testCases := []struct {
+		name    string
+		values  []interface{}
+		expSize uint
+	}{
+		{
+			name: "Pop from empty set",
+		},
+		{
+			name:    "Pop from a non-empty set",
+			values:  []interface{}{1, 2, 3, 4.53, "str", "set", true, 'b'},
+			expSize: 8,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := newThreadSafeSet()
+			s.Append(tc.values...)
+
+			val := s.Pop()
+			if s.Size() == 0 && val != nil { // empty set
+				t.Errorf("expected popped value is nil, actual %v", val)
+			} else if s.Size() > 0 && !s.Contains(val) { // non-empty set
+				t.Errorf("set should contain %v, but not contain", val)
+			}
+		})
+	}
+}
