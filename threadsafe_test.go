@@ -181,3 +181,37 @@ func TestThreadSafeSet_Remove(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_Contains(t *testing.T) {
+	testCases := []struct {
+		name        string
+		values      []interface{}
+		checkValues []interface{}
+		exist       []bool
+	}{
+		{
+			name:        "Check in empty set",
+			checkValues: []interface{}{1, 2, 3.4, "str", true},
+			exist:       []bool{false, false, false, false, false},
+		},
+		{
+			name:        "Check existing and non existing values",
+			values:      []interface{}{1, 2, 3, true, 4.5, "str", byte('b')},
+			checkValues: []interface{}{1, 2, 5, false, "str", true},
+			exist:       []bool{true, true, false, false, true, true},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := newThreadSafeSet()
+			s.Append(tc.values...)
+
+			for i, v := range tc.checkValues {
+				if s.Contains(v) != tc.exist[i] {
+					t.Errorf("value: %v\nexpected %v, actual %v", v, tc.exist[i], s.Contains(v))
+				}
+			}
+		})
+	}
+}
