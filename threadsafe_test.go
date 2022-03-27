@@ -318,3 +318,48 @@ func TestThreadSafeSet_Clear(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_Empty(t *testing.T) {
+	testCases := []struct {
+		name         string
+		values       []interface{}
+		removeValues []interface{}
+		empty        bool
+	}{
+		{
+			name:  "Check empty set",
+			empty: true,
+		},
+		{
+			name:   "Check non-empty set",
+			values: []interface{}{1, 2, 3, 4.12, true, "test"},
+			empty:  false,
+		},
+		{
+			name:         "Firstly fill, then clear",
+			values:       []interface{}{1, 2, 3, 4.12, true, "test"},
+			removeValues: []interface{}{1, 2, 3, 4.12, true, "test"},
+			empty:        true,
+		},
+		{
+			name:         "Firstly fill, then remove some elements",
+			values:       []interface{}{1, 2, 3, 4.12, true, "test"},
+			removeValues: []interface{}{1, 2, 3, true},
+			empty:        false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := newThreadSafeSet()
+			s.Append(tc.values...)
+			for _, val := range tc.removeValues {
+				s.Remove(val)
+			}
+			empty := s.Empty()
+			if empty != tc.empty {
+				t.Errorf("expected %v, actual %v", tc.empty, empty)
+			}
+		})
+	}
+}
