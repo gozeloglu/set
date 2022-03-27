@@ -728,6 +728,12 @@ func TestThreadSafeSet_IsSuperset(t *testing.T) {
 			values2:    []interface{}{1, 2, "set"},
 			isSuperset: false,
 		},
+		{
+			name:       "Equal sets",
+			values1:    []interface{}{1, 2, 3, "test", false},
+			values2:    []interface{}{1, 2, 3, "test", false},
+			isSuperset: true,
+		},
 	}
 
 	for _, tc := range testCases {
