@@ -846,3 +846,86 @@ func TestThreadSafeSet_Equal(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_SymmetricDifference(t *testing.T) {
+	testCases := []struct {
+		name    string
+		values1 []interface{}
+		values2 []interface{}
+		expSet  Set
+	}{
+		{
+			name:   "Empty sets",
+			expSet: New(ThreadSafe),
+		},
+		{
+			name:    "First set is empty",
+			values2: []interface{}{1, 2, "test"},
+			expSet: &ThreadSafeSet{set: map[interface{}]struct{}{
+				1:      setVal,
+				2:      setVal,
+				"test": setVal,
+			}},
+		},
+		{
+			name:    "Equal sets",
+			values1: []interface{}{1, 2, "test", 32.12, false},
+			values2: []interface{}{1, 2, "test", 32.12, false},
+			expSet:  New(ThreadSafe),
+		},
+		{
+			name:    "All distinct item sets",
+			values1: []interface{}{1, 2, 3, 4},
+			values2: []interface{}{5, 6, 7, 8},
+			expSet: &ThreadSafeSet{set: map[interface{}]struct{}{
+				1: setVal,
+				2: setVal,
+				3: setVal,
+				4: setVal,
+				5: setVal,
+				6: setVal,
+				7: setVal,
+				8: setVal,
+			}},
+		},
+		{
+			name:    "Symmetric difference sets",
+			values1: []interface{}{1, 2, "test", false},
+			values2: []interface{}{2, "set", true, false},
+			expSet: &ThreadSafeSet{set: map[interface{}]struct{}{
+				1:      setVal,
+				true:   setVal,
+				"test": setVal,
+				"set":  setVal,
+			}},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s1 := newThreadSafeSet()
+			s2 := newThreadSafeSet()
+			s1.Append(tc.values1...)
+			s2.Append(tc.values2...)
+
+			symmetricDiffSet := s1.SymmetricDifference(s2)
+			if symmetricDiffSet.Size() != tc.expSet.Size() {
+				t.Errorf("expected size %v, actual set size %v", tc.expSet.Size(), symmetricDiffSet.Size())
+			}
+
+			sds := symmetricDiffSet.(*ThreadSafeSet)
+			for val := range sds.set {
+				if !tc.expSet.Contains(val) {
+					t.Errorf("expected %v in expected set, but not exists", val)
+				}
+			}
+
+			ts := tc.expSet.(*ThreadSafeSet)
+			for val := range ts.set {
+				if !sds.Contains(val) {
+					t.Errorf("expected %v in symmetric difference set, but not exists", val)
+				}
+			}
+		})
+	}
+}
