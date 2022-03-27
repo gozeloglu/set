@@ -215,3 +215,48 @@ func TestThreadSafeSet_Contains(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_Size(t *testing.T) {
+	testCases := []struct {
+		name         string
+		values       []interface{}
+		removeValues []interface{}
+		expSize      uint
+	}{
+		{
+			name: "Empty set",
+		},
+		{
+			name:    "Single value set",
+			values:  []interface{}{1},
+			expSize: 1,
+		},
+		{
+			name:    "Multiple value set",
+			values:  []interface{}{1, 2, 3.45, "str", true, 'c'},
+			expSize: 6,
+		},
+		{
+			name:         "Add and remove multiple values",
+			values:       []interface{}{1, 2, 3, 4.564, "str", false},
+			removeValues: []interface{}{1, "str", false},
+			expSize:      3,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s := newThreadSafeSet()
+			s.Append(tc.values...)
+
+			for _, v := range tc.removeValues {
+				s.Remove(v)
+			}
+
+			size := s.Size()
+			if size != tc.expSize {
+				t.Errorf("expected size %v, actual size %v", tc.expSize, size)
+			}
+		})
+	}
+}
