@@ -394,3 +394,91 @@ func TestThreadSafeSet_Slice(t *testing.T) {
 		})
 	}
 }
+
+func TestThreadSafeSet_Union(t *testing.T) {
+	testCases := []struct {
+		name    string
+		values1 []interface{}
+		values2 []interface{}
+		expSet  Set
+	}{
+		{
+			name:   "Both empty sets",
+			expSet: New(ThreadSafe),
+		},
+		{
+			name:    "First set is empty",
+			values2: []interface{}{1, 2, 3, 4, "test", true},
+			expSet: &ThreadSafeSet{set: map[interface{}]struct{}{
+				1:      setVal,
+				2:      setVal,
+				3:      setVal,
+				4:      setVal,
+				"test": setVal,
+				true:   setVal,
+			}},
+		},
+		{
+			name:    "Second set is empty",
+			values1: []interface{}{1, 2, 3, 4, "test", true},
+			expSet: &ThreadSafeSet{set: map[interface{}]struct{}{
+				1:      setVal,
+				2:      setVal,
+				3:      setVal,
+				4:      setVal,
+				"test": setVal,
+				true:   setVal,
+			}},
+		},
+		{
+			name:    "Both sets are not empty",
+			values1: []interface{}{1, 2, 3, 4, 5.12, "test", false},
+			values2: []interface{}{1.23, "union", true},
+			expSet: &ThreadSafeSet{set: map[interface{}]struct{}{
+				1:       setVal,
+				2:       setVal,
+				3:       setVal,
+				4:       setVal,
+				5.12:    setVal,
+				1.23:    setVal,
+				"test":  setVal,
+				"union": setVal,
+				true:    setVal,
+				false:   setVal,
+			}},
+		},
+		{
+			name:    "Duplicate values",
+			values1: []interface{}{1, 2, 3, "test", false},
+			values2: []interface{}{1, 2, "test", true},
+			expSet: &ThreadSafeSet{set: map[interface{}]struct{}{
+				1:      setVal,
+				2:      setVal,
+				3:      setVal,
+				"test": setVal,
+				true:   setVal,
+				false:  setVal,
+			}},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			s1 := newThreadSafeSet()
+			s2 := newThreadSafeSet()
+			s1.Append(tc.values1...)
+			s2.Append(tc.values2...)
+			unionSet := s1.Union(s2)
+
+			ts := tc.expSet.(*ThreadSafeSet)
+			if ts.Size() != unionSet.Size() {
+				t.Errorf("expected size %v, actual size %v", ts.Size(), unionSet.Size())
+			}
+			for val := range ts.set {
+				if !unionSet.Contains(val) {
+					t.Errorf("expected %v, but not exists in union set", val)
+				}
+			}
+		})
+	}
+}
