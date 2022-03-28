@@ -11,10 +11,10 @@ type ThreadSafeSet struct {
 
 // newThreadSafeSet creates a new *ThreadSafeSet.
 func newThreadSafeSet() *ThreadSafeSet {
-	return &ThreadSafeSet{set: map[interface{}]struct{}{}}
+	return &ThreadSafeSet{set: make(map[interface{}]struct{})}
 }
 
-// Add adds a new values to set if there is enough capacity.
+// Add adds a new values to set.
 func (s *ThreadSafeSet) Add(val interface{}) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -71,7 +71,7 @@ func (s *ThreadSafeSet) size() uint {
 }
 
 // Pop returns a random value from the set. If there is no element in set, it
-// returns nil.
+// returns nil. It does not remove any elements from the set.
 func (s *ThreadSafeSet) Pop() interface{} {
 	s.rw.RLock()
 	defer s.rw.RUnlock()
@@ -170,8 +170,7 @@ func (s *ThreadSafeSet) Difference(set Set) Set {
 }
 
 // IsSubset returns true if all items in the set exist in the given set.
-// Otherwise, it returns false. It is not a thread-safe method. It does not handle
-// the concurrency.
+// Otherwise, it returns false.
 func (s *ThreadSafeSet) IsSubset(set Set) bool {
 	o := set.(*ThreadSafeSet)
 

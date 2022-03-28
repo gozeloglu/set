@@ -669,7 +669,7 @@ func TestThreadSafeSet_IsSubset(t *testing.T) {
 		{
 			name:     "First set is not subset of the second set",
 			values1:  []interface{}{1, 2, 3, 4.23},
-			values2:  []interface{}{1, "test"},
+			values2:  []interface{}{1, 2, 3, 5.56, "test"},
 			isSubset: false,
 		},
 		{
