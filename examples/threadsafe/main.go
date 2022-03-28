@@ -13,7 +13,7 @@ func main() {
 	fmt.Printf("set size: %v\n", s.Size())
 	fmt.Printf("all values: ")
 	for _, v := range s.Slice() {
-		fmt.Printf("%+v ", v)
+		fmt.Printf("%v ", v)
 	}
 	fmt.Println()
 }
