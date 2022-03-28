@@ -6,7 +6,7 @@ import (
 )
 
 func TestSet_New(t *testing.T) {
-	s := New()
+	s := newThreadUnsafeSet()
 	if len(s.set) != 0 {
 		t.Errorf("size is not zero. it is %v", len(s.set))
 	}
@@ -15,17 +15,17 @@ func TestSet_New(t *testing.T) {
 	}
 }
 
-func TestSet_Add(t *testing.T) {
+func TestThreadUnsafeSet_Add(t *testing.T) {
 	testCases := []struct {
 		name   string
-		set    *Set
+		set    Set
 		val    interface{}
 		expLen uint
 		expSet map[interface{}]struct{}
 	}{
 		{
 			name:   "Add a value from scratch",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			val:    "first",
 			expLen: 1,
 			expSet: map[interface{}]struct{}{
@@ -34,7 +34,7 @@ func TestSet_Add(t *testing.T) {
 		},
 		{
 			name:   "Add int value",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			val:    12,
 			expLen: 1,
 			expSet: map[interface{}]struct{}{
@@ -43,7 +43,7 @@ func TestSet_Add(t *testing.T) {
 		},
 		{
 			name:   "Add float value",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			val:    12.3,
 			expLen: 1,
 			expSet: map[interface{}]struct{}{
@@ -52,7 +52,7 @@ func TestSet_Add(t *testing.T) {
 		},
 		{
 			name:   "Add bool value",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			val:    true,
 			expLen: 1,
 			expSet: map[interface{}]struct{}{
@@ -61,7 +61,7 @@ func TestSet_Add(t *testing.T) {
 		},
 		{
 			name:   "Add byte value",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			val:    byte('b'),
 			expLen: 1,
 			expSet: map[interface{}]struct{}{
@@ -73,16 +73,17 @@ func TestSet_Add(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.set.Add(tc.val)
-			if tc.expLen != uint(len(tc.set.set)) {
-				t.Errorf("expected length: %v, actual length: %v", tc.expLen, uint(len(tc.set.set)))
+			ts := tc.set.(*ThreadUnsafeSet)
+			if tc.expLen != tc.set.Size() {
+				t.Errorf("expected length: %v, actual length: %v", tc.expLen, tc.set.Size())
 			}
-			for v := range tc.set.set {
+			for v := range ts.set {
 				if _, ok := tc.expSet[v]; !ok {
 					t.Errorf("expected value: %v, but not found in expected set", v)
 				}
 			}
 			for v := range tc.expSet {
-				if _, ok := tc.set.set[v]; !ok {
+				if _, ok := ts.set[v]; !ok {
 					t.Errorf("expected value: %v, but not found in test case set", v)
 				}
 			}
@@ -90,30 +91,30 @@ func TestSet_Add(t *testing.T) {
 	}
 }
 
-func TestSet_Append(t *testing.T) {
+func TestThreadUnsafeSet_Append(t *testing.T) {
 	testCases := []struct {
 		name   string
-		set    *Set
+		set    Set
 		values []interface{}
 	}{
 		{
 			name:   "Append single value",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{"test_value"},
 		},
 		{
 			name:   "Append multiple values",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{"test_value1", "test_value2"},
 		},
 		{
 			name:   "Append nothing",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{},
 		},
 		{
 			name:   "Append different data types",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{"str", 12, true, 32.4, uint16(45), byte('a')},
 		},
 	}
@@ -121,8 +122,9 @@ func TestSet_Append(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.set.Append(tc.values...)
+			ts := tc.set.(*ThreadUnsafeSet)
 			for _, val := range tc.values {
-				if _, ok := tc.set.set[val]; !ok {
+				if _, ok := ts.set[val]; !ok {
 					t.Errorf("expected %v, but not found in set", val)
 				}
 			}
@@ -130,10 +132,10 @@ func TestSet_Append(t *testing.T) {
 	}
 }
 
-func TestSet_Remove(t *testing.T) {
+func TestThreadUnsafeSet_Remove(t *testing.T) {
 	testCases := []struct {
 		name            string
-		set             *Set
+		set             Set
 		values          []interface{}
 		expRemoveValues []interface{}
 		remainingValues []interface{}
@@ -141,21 +143,21 @@ func TestSet_Remove(t *testing.T) {
 	}{
 		{
 			name:            "Remove from empty set",
-			set:             New(),
+			set:             newThreadUnsafeSet(),
 			values:          []interface{}{},
 			expRemoveValues: []interface{}{"test", 12},
 			expLen:          0,
 		},
 		{
 			name:            "Remove from 1-length set",
-			set:             New(),
+			set:             newThreadUnsafeSet(),
 			values:          []interface{}{"test_val"},
 			expRemoveValues: []interface{}{"test_val"},
 			expLen:          0,
 		},
 		{
 			name:            "Remove from 3-length set",
-			set:             New(),
+			set:             newThreadUnsafeSet(),
 			values:          []interface{}{"val", 12, true},
 			expRemoveValues: []interface{}{12},
 			remainingValues: []interface{}{"val", true},
@@ -163,7 +165,7 @@ func TestSet_Remove(t *testing.T) {
 		},
 		{
 			name:            "Remove multiple values",
-			set:             New(),
+			set:             newThreadUnsafeSet(),
 			values:          []interface{}{"test", 12, 43.2, true, byte('a')},
 			expRemoveValues: []interface{}{"test", true, 43.2},
 			remainingValues: []interface{}{12, byte('a')},
@@ -171,7 +173,7 @@ func TestSet_Remove(t *testing.T) {
 		},
 		{
 			name:            "Remove not exist value",
-			set:             New(),
+			set:             newThreadUnsafeSet(),
 			values:          []interface{}{"test_val"},
 			expRemoveValues: []interface{}{"test_key"},
 			remainingValues: []interface{}{"test_val"},
@@ -186,12 +188,14 @@ func TestSet_Remove(t *testing.T) {
 				tc.set.Remove(v)
 			}
 
-			actualLen := len(tc.set.set)
+			actualLen := int(tc.set.Size())
 			if actualLen != tc.expLen {
 				t.Errorf("expected length %v, actual length %v", tc.expLen, actualLen)
 			}
+
+			ts := tc.set.(*ThreadUnsafeSet)
 			for _, v := range tc.remainingValues {
-				if _, ok := tc.set.set[v]; !ok {
+				if _, ok := ts.set[v]; !ok {
 					t.Errorf("expected value %v, but not found in set", v)
 				}
 			}
@@ -199,72 +203,72 @@ func TestSet_Remove(t *testing.T) {
 	}
 }
 
-func TestSet_Contains(t *testing.T) {
+func TestThreadUnsafeSet_Contains(t *testing.T) {
 	testCases := []struct {
 		name     string
-		set      *Set
+		set      Set
 		values   []interface{}
 		checkVal interface{}
 		exist    bool
 	}{
 		{
 			name:     "Check exist value",
-			set:      New(),
+			set:      newThreadUnsafeSet(),
 			values:   []interface{}{"test"},
 			checkVal: "test",
 			exist:    true,
 		},
 		{
 			name:     "Check non-exist value",
-			set:      New(),
+			set:      newThreadUnsafeSet(),
 			values:   []interface{}{"test"},
 			checkVal: "value",
 			exist:    false,
 		},
 		{
 			name:     "Check empty set",
-			set:      New(),
+			set:      newThreadUnsafeSet(),
 			checkVal: "test",
 			exist:    false,
 		},
 		{
 			name:     "Check integer - exist",
-			set:      New(),
+			set:      newThreadUnsafeSet(),
 			values:   []interface{}{120},
 			checkVal: 120,
 			exist:    true,
 		},
 		{
 			name:     "Check integer - not exist",
-			set:      New(),
+			set:      newThreadUnsafeSet(),
 			values:   []interface{}{120},
 			checkVal: 200,
 			exist:    false,
 		},
 		{
 			name:     "Check float - exist",
-			set:      New(),
+			set:      newThreadUnsafeSet(),
 			values:   []interface{}{12.98},
 			checkVal: 12.98,
 			exist:    true,
 		},
 		{
 			name:     "Check boolean",
-			set:      New(),
+			set:      newThreadUnsafeSet(),
 			values:   []interface{}{false},
 			checkVal: false,
 			exist:    true,
 		},
 		{
 			name:     "Check byte",
-			set:      New(),
+			set:      newThreadUnsafeSet(),
 			values:   []interface{}{byte('a')},
 			checkVal: byte('a'),
 			exist:    true,
 		},
 		{
 			name:     "Check value from multiple set",
-			set:      New(),
+			set:      newThreadUnsafeSet(),
 			values:   []interface{}{120, 32.123, "test", false, byte('a')},
 			checkVal: 120,
 			exist:    true,
@@ -283,41 +287,41 @@ func TestSet_Contains(t *testing.T) {
 	}
 }
 
-func TestSet_Size(t *testing.T) {
+func TestThreadUnsafeSet_Size(t *testing.T) {
 	testCases := []struct {
 		name         string
-		set          *Set
+		set          Set
 		values       []interface{}
 		removeValues []interface{}
 		expSize      uint
 	}{
 		{
 			name:    "Empty set",
-			set:     New(),
+			set:     newThreadUnsafeSet(),
 			expSize: 0,
 		},
 		{
 			name:    "Add value, check size",
-			set:     New(),
+			set:     newThreadUnsafeSet(),
 			values:  []interface{}{"test"},
 			expSize: 1,
 		},
 		{
 			name:         "Add value, remove value, check size",
-			set:          New(),
+			set:          newThreadUnsafeSet(),
 			values:       []interface{}{"test"},
 			removeValues: []interface{}{"test"},
 			expSize:      0,
 		},
 		{
 			name:    "Add multiple values",
-			set:     New(),
+			set:     newThreadUnsafeSet(),
 			values:  []interface{}{"test", 125, true, 64.23},
 			expSize: 4,
 		},
 		{
 			name:         "Add multiple values, remove multiple values",
-			set:          New(),
+			set:          newThreadUnsafeSet(),
 			values:       []interface{}{"test", 125, true, 64.23},
 			removeValues: []interface{}{125, true},
 			expSize:      2,
@@ -342,26 +346,26 @@ func TestSet_Size(t *testing.T) {
 	}
 }
 
-func TestSet_Pop(t *testing.T) {
+func TestThreadUnsafeSet_Pop(t *testing.T) {
 	testCases := []struct {
 		name    string
-		set     *Set
+		set     Set
 		values  []interface{}
 		isEmpty bool
 	}{
 		{
 			name:    "Pop from empty set",
-			set:     New(),
+			set:     newThreadUnsafeSet(),
 			isEmpty: true,
 		},
 		{
 			name:   "Pop from single value set",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{"test"},
 		},
 		{
 			name:   "Pop from multiple value set",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{"test", 123, true},
 		},
 	}
@@ -387,25 +391,25 @@ func TestSet_Pop(t *testing.T) {
 	}
 }
 
-func TestSet_Clear(t *testing.T) {
+func TestThreadUnsafeSet_Clear(t *testing.T) {
 	testCases := []struct {
 		name   string
-		set    *Set
+		set    Set
 		values []interface{}
 	}{
 		{
 			name:   "Clear empty set",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{},
 		},
 		{
 			name:   "Clear single value set",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{"test"},
 		},
 		{
 			name:   "Clear multiple value set",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{"test", 12, false, byte('w'), 43.10},
 		},
 	}
@@ -427,42 +431,42 @@ func TestSet_Clear(t *testing.T) {
 	}
 }
 
-func TestSet_Empty(t *testing.T) {
+func TestThreadUnsafeSet_Empty(t *testing.T) {
 	testCases := []struct {
 		name         string
-		set          *Set
+		set          Set
 		values       []interface{}
 		removeValues []interface{}
 		empty        bool
 	}{
 		{
 			name:   "Check empty set",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{},
 			empty:  true,
 		},
 		{
 			name:   "Check single value set",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{"test"},
 			empty:  false,
 		},
 		{
 			name:   "Check multiple value set",
-			set:    New(),
+			set:    newThreadUnsafeSet(),
 			values: []interface{}{"test", 100, true, false, 98.4},
 			empty:  false,
 		},
 		{
 			name:         "Check firstly filled, then cleared set",
-			set:          New(),
+			set:          newThreadUnsafeSet(),
 			values:       []interface{}{"test", 100, true, 76.34},
 			removeValues: []interface{}{"test", 100, true, 76.34},
 			empty:        true,
 		},
 		{
 			name:         "Check firstly filled, then removed some elements set",
-			set:          New(),
+			set:          newThreadUnsafeSet(),
 			values:       []interface{}{"test", 100, true, 76.34},
 			removeValues: []interface{}{"test", 100},
 			empty:        false,
@@ -486,7 +490,7 @@ func TestSet_Empty(t *testing.T) {
 	}
 }
 
-func TestSet_Slice(t *testing.T) {
+func TestThreadUnsafeSet_Slice(t *testing.T) {
 	testCases := []struct {
 		name   string
 		values []interface{}
@@ -509,7 +513,7 @@ func TestSet_Slice(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			s := New()
+			s := newThreadUnsafeSet()
 			s.Append(tc.values...)
 			setSlice := s.Slice()
 			if len(setSlice) != tc.expLen {
@@ -524,21 +528,21 @@ func TestSet_Slice(t *testing.T) {
 	}
 }
 
-func TestSet_Union(t *testing.T) {
+func TestThreadUnsafeSet_Union(t *testing.T) {
 	testCases := []struct {
 		name    string
 		values1 []interface{}
 		values2 []interface{}
-		expSet  *Set
+		expSet  Set
 	}{
 		{
 			name:   "Both empty set",
-			expSet: New(),
+			expSet: newThreadUnsafeSet(),
 		},
 		{
 			name:    "Set-1 is empty",
 			values2: []interface{}{"test", 1, 120.32, true},
-			expSet: &Set{set: map[interface{}]struct{}{
+			expSet: &ThreadUnsafeSet{set: map[interface{}]struct{}{
 				"test": setVal,
 				1:      setVal,
 				120.32: setVal,
@@ -548,7 +552,7 @@ func TestSet_Union(t *testing.T) {
 		{
 			name:    "Set-2 is empty",
 			values1: []interface{}{"test", 1, 120.32, true},
-			expSet: &Set{set: map[interface{}]struct{}{
+			expSet: &ThreadUnsafeSet{set: map[interface{}]struct{}{
 				"test": setVal,
 				1:      setVal,
 				120.32: setVal,
@@ -559,7 +563,7 @@ func TestSet_Union(t *testing.T) {
 			name:    "Both sets not empty",
 			values1: []interface{}{"testStr", 32, false},
 			values2: []interface{}{"anotherStr", 43, true},
-			expSet: &Set{set: map[interface{}]struct{}{
+			expSet: &ThreadUnsafeSet{set: map[interface{}]struct{}{
 				"testStr":    setVal,
 				32:           setVal,
 				false:        setVal,
@@ -572,7 +576,7 @@ func TestSet_Union(t *testing.T) {
 			name:    "Duplicate values",
 			values1: []interface{}{"test", 100, true},
 			values2: []interface{}{"test", 120, 100, true, false},
-			expSet: &Set{set: map[interface{}]struct{}{
+			expSet: &ThreadUnsafeSet{set: map[interface{}]struct{}{
 				"test": setVal,
 				100:    setVal,
 				true:   setVal,
@@ -584,9 +588,9 @@ func TestSet_Union(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			set1 := New()
+			set1 := newThreadUnsafeSet()
 			set1.Append(tc.values1...)
-			set2 := New()
+			set2 := newThreadUnsafeSet()
 			set2.Append(tc.values2...)
 
 			unionSet := set1.Union(set2)
@@ -594,7 +598,9 @@ func TestSet_Union(t *testing.T) {
 			if unionSet.Size() != tc.expSet.Size() {
 				t.Errorf("expected size %v, actual size %v", tc.expSet.Size(), unionSet.Size())
 			}
-			for val := range tc.expSet.set {
+
+			ts := tc.expSet.(*ThreadUnsafeSet)
+			for val := range ts.set {
 				if !unionSet.Contains(val) {
 					t.Errorf("expected %v, but not exists in unionSet", val)
 				}
@@ -604,32 +610,32 @@ func TestSet_Union(t *testing.T) {
 	}
 }
 
-func TestSet_Intersection(t *testing.T) {
+func TestThreadUnsafeSet_Intersection(t *testing.T) {
 	testCases := []struct {
 		name    string
 		values1 []interface{}
 		values2 []interface{}
-		expSet  *Set
+		expSet  Set
 	}{
 		{
 			name:   "Both empty sets",
-			expSet: New(),
+			expSet: newThreadUnsafeSet(),
 		},
 		{
 			name:    "Set1 is empty",
 			values2: []interface{}{1, 2, 3, 4},
-			expSet:  New(),
+			expSet:  newThreadUnsafeSet(),
 		},
 		{
 			name:    "Set2 is empty",
 			values1: []interface{}{1, 2, 3, 4},
-			expSet:  New(),
+			expSet:  newThreadUnsafeSet(),
 		},
 		{
 			name:    "Both set is non-empty",
 			values1: []interface{}{1, 2, 3, 4, "test", true, byte('w')},
 			values2: []interface{}{1, 2, "test", false, true, byte('a')},
-			expSet: &Set{set: map[interface{}]struct{}{
+			expSet: &ThreadUnsafeSet{set: map[interface{}]struct{}{
 				1:      setVal,
 				2:      setVal,
 				"test": setVal,
@@ -640,26 +646,28 @@ func TestSet_Intersection(t *testing.T) {
 			name:    "No intersection",
 			values2: []interface{}{1, 2, 3, 4, "value"},
 			values1: []interface{}{0, "test", true},
-			expSet:  New(),
+			expSet:  newThreadUnsafeSet(),
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			set1 := New()
+			set1 := newThreadUnsafeSet()
 			set1.Append(tc.values1...)
 
-			set2 := New()
+			set2 := newThreadUnsafeSet()
 			set2.Append(tc.values2...)
 
 			intersectSet1 := set1.Intersection(set2)
-			for k := range tc.expSet.set {
+			ts := tc.expSet.(*ThreadUnsafeSet)
+			for k := range ts.set {
 				if !intersectSet1.Contains(k) {
 					t.Errorf("expected value %v, but not found in intersection set", k)
 				}
 			}
 			intersectSet2 := set2.Intersection(set1)
-			for k := range tc.expSet.set {
+
+			for k := range ts.set {
 				if !intersectSet2.Contains(k) {
 					t.Errorf("expected value %v, but not found in intersection set", k)
 				}
@@ -668,24 +676,24 @@ func TestSet_Intersection(t *testing.T) {
 	}
 }
 
-func TestSet_Difference(t *testing.T) {
+func TestThreadUnsafeSet_Difference(t *testing.T) {
 	testCases := []struct {
 		name    string
 		values1 []interface{}
 		values2 []interface{}
-		expSet1 *Set
-		expSet2 *Set
+		expSet1 Set
+		expSet2 Set
 	}{
 		{
 			name:    "Both empty sets",
-			expSet1: New(),
-			expSet2: New(),
+			expSet1: newThreadUnsafeSet(),
+			expSet2: newThreadUnsafeSet(),
 		},
 		{
 			name:    "Set1 is empty",
 			values2: []interface{}{1, 2, 3, 4, 5},
-			expSet1: New(),
-			expSet2: &Set{set: map[interface{}]struct{}{
+			expSet1: newThreadUnsafeSet(),
+			expSet2: &ThreadUnsafeSet{set: map[interface{}]struct{}{
 				1: setVal,
 				2: setVal,
 				3: setVal,
@@ -696,24 +704,24 @@ func TestSet_Difference(t *testing.T) {
 		{
 			name:    "Set2 is empty",
 			values1: []interface{}{1, 2, 3, 4, 5},
-			expSet1: &Set{set: map[interface{}]struct{}{
+			expSet1: &ThreadUnsafeSet{set: map[interface{}]struct{}{
 				1: setVal,
 				2: setVal,
 				3: setVal,
 				4: setVal,
 				5: setVal,
 			}},
-			expSet2: New(),
+			expSet2: newThreadUnsafeSet(),
 		},
 		{
 			name:    "Both sets are non-empty",
 			values1: []interface{}{1, 2, 3, 4, 5},
 			values2: []interface{}{1, 2, 3, 10, 20, "test", true},
-			expSet1: &Set{set: map[interface{}]struct{}{
+			expSet1: &ThreadUnsafeSet{set: map[interface{}]struct{}{
 				4: setVal,
 				5: setVal,
 			}},
-			expSet2: &Set{map[interface{}]struct{}{
+			expSet2: &ThreadUnsafeSet{map[interface{}]struct{}{
 				10:     setVal,
 				20:     setVal,
 				"test": setVal,
@@ -724,17 +732,19 @@ func TestSet_Difference(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			set1 := New()
+			set1 := newThreadUnsafeSet()
 			set1.Append(tc.values1...)
 
-			set2 := New()
+			set2 := newThreadUnsafeSet()
 			set2.Append(tc.values2...)
 
 			diffSet1 := set1.Difference(set2)
 			if diffSet1.Size() != tc.expSet1.Size() {
 				t.Errorf("expected set size %v, actual set size %v", tc.expSet1.Size(), diffSet1.Size())
 			}
-			for val := range diffSet1.set {
+
+			ds1 := diffSet1.(*ThreadUnsafeSet)
+			for val := range ds1.set {
 				if !tc.expSet1.Contains(val) {
 					t.Errorf("expected %v, but not found", val)
 				}
@@ -744,7 +754,8 @@ func TestSet_Difference(t *testing.T) {
 			if diffSet2.Size() != tc.expSet2.Size() {
 				t.Errorf("expected set size %v, actual set size %v", tc.expSet2.Size(), diffSet2.Size())
 			}
-			for val := range diffSet2.set {
+			ds2 := diffSet2.(*ThreadUnsafeSet)
+			for val := range ds2.set {
 				if !tc.expSet2.Contains(val) {
 					t.Errorf("expected %v, but not found", val)
 				}
@@ -753,7 +764,7 @@ func TestSet_Difference(t *testing.T) {
 	}
 }
 
-func TestSet_IsSubset(t *testing.T) {
+func TestThreadUnsafeSet_IsSubset(t *testing.T) {
 	testCases := []struct {
 		name     string
 		values1  []interface{}
@@ -790,10 +801,10 @@ func TestSet_IsSubset(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			set1 := New()
+			set1 := newThreadUnsafeSet()
 			set1.Append(tc.values1...)
 
-			set2 := New()
+			set2 := newThreadUnsafeSet()
 			set2.Append(tc.values2...)
 
 			isSubset := set1.IsSubset(set2)
@@ -804,7 +815,7 @@ func TestSet_IsSubset(t *testing.T) {
 	}
 }
 
-func TestSet_IsSuperset(t *testing.T) {
+func TestThreadUnsafeSet_IsSuperset(t *testing.T) {
 	testCases := []struct {
 		name       string
 		values1    []interface{}
@@ -841,10 +852,10 @@ func TestSet_IsSuperset(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			set1 := New()
+			set1 := newThreadUnsafeSet()
 			set1.Append(tc.values1...)
 
-			set2 := New()
+			set2 := newThreadUnsafeSet()
 			set2.Append(tc.values2...)
 
 			isSuperset := set1.IsSuperset(set2)
@@ -855,7 +866,7 @@ func TestSet_IsSuperset(t *testing.T) {
 	}
 }
 
-func TestSet_IsDisjoint(t *testing.T) {
+func TestThreadUnsafeSet_IsDisjoint(t *testing.T) {
 	testCases := []struct {
 		name       string
 		values1    []interface{}
@@ -892,10 +903,10 @@ func TestSet_IsDisjoint(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			set1 := New()
+			set1 := newThreadUnsafeSet()
 			set1.Append(tc.values1...)
 
-			set2 := New()
+			set2 := newThreadUnsafeSet()
 			set2.Append(tc.values2...)
 
 			isDisjoint := set1.IsDisjoint(set2)
@@ -906,7 +917,7 @@ func TestSet_IsDisjoint(t *testing.T) {
 	}
 }
 
-func TestSet_Equal(t *testing.T) {
+func TestThreadUnsafeSet_Equal(t *testing.T) {
 	testCases := []struct {
 		name    string
 		values1 []interface{}
@@ -939,10 +950,10 @@ func TestSet_Equal(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			set1 := New()
+			set1 := newThreadUnsafeSet()
 			set1.Append(tc.values1...)
 
-			set2 := New()
+			set2 := newThreadUnsafeSet()
 			set2.Append(tc.values2...)
 
 			equal := set1.Equal(set2)
@@ -953,21 +964,21 @@ func TestSet_Equal(t *testing.T) {
 	}
 }
 
-func TestSet_SymmetricDifference(t *testing.T) {
+func TestThreadUnsafeSet_SymmetricDifference(t *testing.T) {
 	testCases := []struct {
 		name    string
 		values1 []interface{}
 		values2 []interface{}
-		expSet  *Set
+		expSet  Set
 	}{
 		{
 			name:   "Empty sets",
-			expSet: New(),
+			expSet: newThreadUnsafeSet(),
 		},
 		{
 			name:    "set1 is empty",
 			values2: []interface{}{1, 2, 3, 4},
-			expSet: &Set{set: map[interface{}]struct{}{
+			expSet: &ThreadUnsafeSet{set: map[interface{}]struct{}{
 				1: setVal,
 				2: setVal,
 				3: setVal,
@@ -978,13 +989,13 @@ func TestSet_SymmetricDifference(t *testing.T) {
 			name:    "Equal sets",
 			values1: []interface{}{1, 2, 3, 4},
 			values2: []interface{}{1, 2, 3, 4},
-			expSet:  New(),
+			expSet:  newThreadUnsafeSet(),
 		},
 		{
 			name:    "All distinct item sets",
 			values1: []interface{}{1, 2, 3, 4},
 			values2: []interface{}{5, 6, 7, 8},
-			expSet: &Set{set: map[interface{}]struct{}{
+			expSet: &ThreadUnsafeSet{set: map[interface{}]struct{}{
 				1: setVal,
 				2: setVal,
 				3: setVal,
@@ -999,7 +1010,7 @@ func TestSet_SymmetricDifference(t *testing.T) {
 			name:    "Symmetric difference sets",
 			values1: []interface{}{1, 2, 3, 4},
 			values2: []interface{}{2, 3, 4},
-			expSet: &Set{set: map[interface{}]struct{}{
+			expSet: &ThreadUnsafeSet{set: map[interface{}]struct{}{
 				1: setVal,
 			}},
 		},
@@ -1007,10 +1018,10 @@ func TestSet_SymmetricDifference(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			set1 := New()
+			set1 := newThreadUnsafeSet()
 			set1.Append(tc.values1...)
 
-			set2 := New()
+			set2 := newThreadUnsafeSet()
 			set2.Append(tc.values2...)
 
 			symDiffSet := set1.SymmetricDifference(set2)
@@ -1018,13 +1029,15 @@ func TestSet_SymmetricDifference(t *testing.T) {
 				t.Errorf("Expected set size %v, actual set size %v", tc.expSet.Size(), symDiffSet.Size())
 			}
 
-			for val := range symDiffSet.set {
+			sds := symDiffSet.(*ThreadUnsafeSet)
+			for val := range sds.set {
 				if !tc.expSet.Contains(val) {
-					t.Errorf("expected %v expSet, but not contains", val)
+					t.Errorf("expected %v expSet1, but not contains", val)
 				}
 			}
 
-			for val := range tc.expSet.set {
+			ts := tc.expSet.(*ThreadUnsafeSet)
+			for val := range ts.set {
 				if !symDiffSet.Contains(val) {
 					t.Errorf("expected %v in symDiffSet, but not contains", val)
 				}

@@ -4,6 +4,9 @@ test:
 test-v:
 	go test ./... -v
 
+race:
+	go test ./... -race
+
 cover:
 	go test -cover
 
