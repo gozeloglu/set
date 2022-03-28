@@ -5,7 +5,6 @@ import "sync"
 // ThreadSafeSet is a set type which provides the thread-safety.
 type ThreadSafeSet struct {
 	set map[interface{}]struct{}
-	mu  sync.Mutex
 	rw  sync.RWMutex
 }
 
@@ -16,8 +15,8 @@ func newThreadSafeSet() *ThreadSafeSet {
 
 // Add adds a new values to set.
 func (s *ThreadSafeSet) Add(val interface{}) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.rw.Lock()
+	defer s.rw.Unlock()
 	s.add(val)
 }
 
@@ -29,8 +28,8 @@ func (s *ThreadSafeSet) add(val interface{}) {
 
 // Append adds multiple values into set.
 func (s *ThreadSafeSet) Append(values ...interface{}) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.rw.Lock()
+	defer s.rw.Unlock()
 	for _, val := range values {
 		s.add(val)
 	}
@@ -38,8 +37,8 @@ func (s *ThreadSafeSet) Append(values ...interface{}) {
 
 // Remove deletes the given value.
 func (s *ThreadSafeSet) Remove(val interface{}) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.rw.Lock()
+	defer s.rw.Unlock()
 	delete(s.set, val)
 }
 
@@ -83,8 +82,8 @@ func (s *ThreadSafeSet) Pop() interface{} {
 
 // Clear removes everything from the set.
 func (s *ThreadSafeSet) Clear() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.rw.Lock()
+	defer s.rw.Unlock()
 	s.set = make(map[interface{}]struct{})
 }
 

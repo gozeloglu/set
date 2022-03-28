@@ -1,8 +1,5 @@
-# set 
-[![Go Reference](https://pkg.go.dev/badge/github.com/gozeloglu/set.svg)](https://pkg.go.dev/github.com/gozeloglu/set)
-[![Go Report Card](https://goreportcard.com/badge/github.com/gozeloglu/set)](https://goreportcard.com/report/github.com/gozeloglu/set)
-[![GoCover](http://gocover.io/_badge/github.com/gozeloglu/set)](http://gocover.io/github.com/gozeloglu/set)
-----
+# set [![Go Reference](https://pkg.go.dev/badge/github.com/gozeloglu/set.svg)](https://pkg.go.dev/github.com/gozeloglu/set) [![Go Report Card](https://goreportcard.com/badge/github.com/gozeloglu/set)](https://goreportcard.com/report/github.com/gozeloglu/set) [![GoCover](http://gocover.io/_badge/github.com/gozeloglu/set)](http://gocover.io/github.com/gozeloglu/set)
+
 `set` is a data structure package written by **Go**. It provides some basic set functionalities of the user. It uses 
 `map` data structure under the hood. 
 
